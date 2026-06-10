@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tração Veículos — Comissões 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+  .sidebar { width: 256px; min-height: 100vh; background: #0f172a; flex-shrink: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; color: #94a3b8; border-radius: 8px; cursor: pointer; transition: all .15s; margin: 2px 8px; font-size: .875rem; font-weight: 500; }
+  .nav-item:hover { background: #1e293b; color: #e2e8f0; }
+  .nav-item.active { background: #2563eb; color: white; }
+  .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06); }
+  .stat-value { font-size: 1.75rem; font-weight: 700; color: #0f172a; line-height: 1; }
+  .stat-label { font-size: .8rem; color: #64748b; font-weight: 500; margin-top: 4px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: .875rem; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+  .btn-primary { background: #2563eb; color: white; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #f1f5f9; color: #475569; }
+  .btn-secondary:hover { background: #e2e8f0; }
+  .btn-danger { background: #ef4444; color: white; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-success { background: #22c55e; color: white; }
+  .btn-success:hover { background: #16a34a; }
+  .btn-sm { padding: 5px 10px; font-size: .8rem; }
+  .btn-outline { background: transparent; color: #2563eb; border: 1.5px solid #2563eb; }
+  .btn-outline:hover { background: #eff6ff; }
+  .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+  .badge-green { background: #dcfce7; color: #15803d; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-yellow { background: #fef9c3; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #b91c1c; }
+  .badge-gray { background: #f1f5f9; color: #475569; }
+  .badge-purple { background: #ede9fe; color: #6d28d9; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #f8fafc; padding: 10px 16px; text-align: left; font-size: .72rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+  td { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: .875rem; color: #1e293b; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafbff; }
+  .form-label { display: block; font-size: .8rem; font-weight: 600; color: #374151; margin-bottom: 5px; }
+  .form-input { width: 100%; padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: .875rem; outline: none; transition: border-color .15s; box-sizing: border-box; background: white; }
+  .form-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .form-select { width: 100%; padding: 8px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: .875rem; background: white; outline: none; box-sizing: border-box; }
+  .form-select:focus { border-color: #2563eb; }
+  .form-checkbox { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.55); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
+  .modal { background: white; border-radius: 16px; padding: 28px; max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+  .modal-sm { max-width: 440px; }
+  .modal-lg { max-width: 860px; }
+  .progress-bar { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width .4s ease; }
+  .section-divider { height: 1px; background: #f1f5f9; margin: 20px 0; }
+  #loginPage { min-height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e293b 100%); display: flex; align-items: center; justify-content: center; }
+  .login-card { background: white; border-radius: 20px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 24px 80px rgba(0,0,0,.4); }
+  .alert { padding: 10px 14px; border-radius: 8px; font-size: .875rem; margin-bottom: 12px; }
+  .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  .alert-error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+  .alert-info { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .alert-warning { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+  .commission-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+  .commission-row:last-child { border-bottom: none; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: .72rem; font-weight: 600; }
+  .meta-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+  .meta-atingida { background: #dcfce7; color: #15803d; }
+  .meta-nao-atingida { background: #fee2e2; color: #b91c1c; }
+  .hidden { display: none !important; }
+  .toggle-section { cursor: pointer; user-select: none; }
+  .toggle-section:hover { background: #f8fafc; }
+  @media print {
+    .no-print { display: none !important; }
+    .sidebar { display: none !important; }
+    #main { margin-left: 0 !important; }
+  }
+</style>
+</head>
+<body class="bg-slate-50">
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="text-center mb-8">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h9l2-2M3 6h9m4 0h2l3 4v6h-2"/></svg>
+      </div>
+      <h1 style="font-size:1.5rem;font-weight:800;color:#0f172a;">Tração Veículos</h1>
+      <p style="color:#64748b;font-size:.875rem;margin-top:4px;">Gestão de Comissões 2026</p>
+    </div>
+    <div id="loginError" class="alert alert-error hidden"></div>
+    <div class="mb-4">
+      <label class="form-label">E-mail</label>
+      <input id="loginEmail" type="email" class="form-input" placeholder="seu@email.com" value="admin@tracao.com">
+    </div>
+    <div class="mb-6">
+      <label class="form-label">Senha</label>
+      <input id="loginPassword" type="password" class="form-input" placeholder="••••••••" value="admin123">
+    </div>
+    <button class="btn btn-primary w-full" style="width:100%;justify-content:center;padding:11px;" onclick="App.login()">Entrar</button>
+    <div style="margin-top:20px;padding:12px;background:#f8fafc;border-radius:10px;font-size:.78rem;color:#64748b;">
+      <strong>Acesso Admin:</strong> admin@tracao.com / admin123<br>
+      <strong>Vendedor Demo:</strong> vendedor@tracao.com / vendedor123
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div id="appPage" class="hidden" style="display:flex;min-height:100vh;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar no-print" style="position:fixed;left:0;top:0;bottom:0;overflow-y:auto;z-index:10;">
+    <div style="padding:20px 16px 12px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:36px;height:36px;background:#2563eb;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2 2h9l2-2M3 6h9m4 0h2l3 4v6h-2"/></svg>
+        </div>
+        <div>
+          <div style="color:white;font-weight:700;font-size:.9rem;">Tração Veículos</div>
+          <div style="color:#64748b;font-size:.72rem;">Comissões 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:0 8px;margin-top:8px;">
+      <div style="font-size:.68rem;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;margin-bottom:4px;">Principal</div>
+      <div class="nav-item active" data-page="dashboard" onclick="App.navigate('dashboard')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-page="vendas" onclick="App.navigate('vendas')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Vendas
+      </div>
+      <div class="nav-item" data-page="estoque" onclick="App.navigate('estoque')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+        Estoque
+      </div>
+      <div class="nav-item" data-page="comissoes" onclick="App.navigate('comissoes')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Comissões
+      </div>
+      <div class="nav-item" data-page="relatorios" onclick="App.navigate('relatorios')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        Relatórios
+      </div>
+      <div id="nav-config" class="nav-item hidden" data-page="config" onclick="App.navigate('config')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Configurações
+      </div>
+      <div id="nav-usuarios" class="nav-item hidden" data-page="usuarios" onclick="App.navigate('usuarios')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        Usuários
+      </div>
+    </div>
+
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:16px;border-top:1px solid #1e293b;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div id="sidebarAvatar" style="width:34px;height:34px;border-radius:50%;background:#2563eb;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.875rem;flex-shrink:0;"></div>
+        <div style="overflow:hidden;">
+          <div id="sidebarUserName" style="color:white;font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+          <div id="sidebarUserRole" style="color:#64748b;font-size:.7rem;"></div>
+        </div>
+      </div>
+      <button class="btn btn-secondary" style="width:100%;justify-content:center;font-size:.8rem;padding:7px;" onclick="App.logout()">Sair</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main id="main" style="margin-left:256px;flex:1;min-height:100vh;">
+
+    <!-- Top Header -->
+    <header class="no-print" style="background:white;border-bottom:1px solid #e2e8f0;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;">
+      <div>
+        <h2 id="pageTitle" style="font-size:1.1rem;font-weight:700;color:#0f172a;"></h2>
+        <p id="pageSubtitle" style="font-size:.78rem;color:#64748b;margin-top:1px;"></p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="metaBadge" class="meta-badge"></div>
+        <div style="font-size:.78rem;color:#94a3b8;" id="headerDate"></div>
+      </div>
+    </header>
+
+    <div style="padding:24px 28px;">
+
+      <!-- ===== DASHBOARD ===== -->
+      <div id="page-dashboard" class="page active">
+        <div id="dashboardContent"></div>
+      </div>
+
+      <!-- ===== VENDAS ===== -->
+      <div id="page-vendas" class="page">
+        <div id="vendasContent"></div>
+      </div>
+
+      <!-- ===== ESTOQUE ===== -->
+      <div id="page-estoque" class="page">
+        <div id="estoqueContent"></div>
+      </div>
+
+      <!-- ===== COMISSÕES ===== -->
+      <div id="page-comissoes" class="page">
+        <div id="comissoesContent"></div>
+      </div>
+
+      <!-- ===== RELATÓRIOS ===== -->
+      <div id="page-relatorios" class="page">
+        <div id="relatoriosContent"></div>
+      </div>
+
+      <!-- ===== CONFIGURAÇÕES ===== -->
+      <div id="page-config" class="page">
+        <div id="configContent"></div>
+      </div>
+
+      <!-- ===== USUÁRIOS ===== -->
+      <div id="page-usuarios" class="page">
+        <div id="usuariosContent"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+<div id="modal-container"></div>
+
+<script>
+// ============================================================
+// CONSTANTS & DEFAULT SETTINGS
+// ============================================================
+const DEFAULT_SETTINGS = {
+  vehicleCommission: {
+    belowMeta: 800,
+    meta: 1000,
+    bonusRates: { 7: 0.10, 8: 0.15, 9: 0.20, 10: 0.25 },
+    metaThreshold: 6
+  },
+  ipva: { withoutGoal: 0.25, withGoal: 0.50 },
+  financing: {
+    rRates: { R1: 0.012, R2: 0.024, R3: 0.036, R4: 0.048 },
+    taxDeduction: 0.25,
+    withoutGoalWithoutTAC: 0.10,
+    withoutGoalWithTAC: 0.15,
+    withGoalWithoutTAC: 0.20,
+    withGoalWithTAC: 0.40,
+    tacValue: 1000
+  },
+  insurance: { withoutGoal: 100, withGoal: 250 },
+  despachante: {
+    withoutGoal: 50,
+    withSalesGoal: 100,
+    withBothGoals: 150,
+    registrationGoalThreshold: 0.70,
+    valueFlorianopolis: 890,
+    valueOutside: 990
+  },
+  excedente: { withoutGoal: 0.25, withGoal: 0.50 },
+  consigned: { captationRate: 0.10, servicesRate: 0.40 },
+  stockPurchase: { min: 500, max: 1000 }
+};
+
+const DEFAULT_USERS = [
+  { id: 'u1', name: 'Patrick (Admin)', email: 'patrickcostabr@gmail.com', password: 'Tracao@2026', role: 'admin', active: true, createdAt: new Date().toISOString() },
+  { id: 'u2', name: 'Pablo Vinícius', email: 'paabloviinicius@gmail.com', password: 'Tracao@2026', role: 'seller', active: true, createdAt: new Date().toISOString() },
+  { id: 'u3', name: 'Victor', email: 'victordasf@gmail.com', password: 'Tracao@2026', role: 'seller', active: true, createdAt: new Date().toISOString() },
+  { id: 'u4', name: 'Vandeco Castro', email: 'castro.vandeco@gmail.com', password: 'Tracao@2026', role: 'seller', active: true, createdAt: new Date().toISOString() }
+];
+
+// ============================================================
+// STORE
+// ============================================================
+const Store = {
+  KEY: 'tracaoVeiculos2026',
+  data: null,
+
+  init() {
+    const saved = localStorage.getItem(this.KEY);
+    if (saved) {
+      try { this.data = JSON.parse(saved); } catch(e) { this.data = null; }
+    }
+    if (!this.data || !this.data.initialized) {
+      this.data = {
+        initialized: true,
+        users: DEFAULT_USERS,
+        sales: [],
+        stock: [],
+        settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
+      };
+      this.save();
+    }
+  },
+
+  save() {
+    localStorage.setItem(this.KEY, JSON.stringify(this.data));
+  },
+
+  // Users
+  getUsers() { return this.data.users || []; },
+  getUserById(id) { return this.data.users.find(u => u.id === id); },
+  saveUser(user) {
+    const idx = this.data.users.findIndex(u => u.id === user.id);
+    if (idx >= 0) this.data.users[idx] = user;
+    else this.data.users.push(user);
+    this.save();
+  },
+  deleteUser(id) {
+    this.data.users = this.data.users.filter(u => u.id !== id);
+    this.save();
+  },
+
+  // Sales
+  getSales(sellerId) {
+    let sales = this.data.sales || [];
+    if (sellerId) sales = sales.filter(s => s.sellerId === sellerId);
+    return sales.sort((a,b) => new Date(b.date) - new Date(a.date));
+  },
+  getSaleById(id) { return this.data.sales.find(s => s.id === id); },
+  saveSale(sale) {
+    const idx = this.data.sales.findIndex(s => s.id === sale.id);
+    if (idx >= 0) this.data.sales[idx] = sale;
+    else this.data.sales.push(sale);
+    this.save();
+  },
+  deleteSale(id) {
+    this.data.sales = this.data.sales.filter(s => s.id !== id);
+    this.save();
+  },
+
+  // Stock
+  getStock() { return (this.data.stock || []).sort((a,b) => new Date(b.entryDate) - new Date(a.entryDate)); },
+  getActiveStock() { return this.getStock().filter(s => s.status === 'available'); },
+  getStockById(id) { return this.data.stock.find(s => s.id === id); },
+  saveStock(item) {
+    const idx = this.data.stock.findIndex(s => s.id === item.id);
+    if (idx >= 0) this.data.stock[idx] = item;
+    else this.data.stock.push(item);
+    this.save();
+  },
+  deleteStock(id) {
+    this.data.stock = this.data.stock.filter(s => s.id !== id);
+    this.save();
+  },
+
+  // Settings
+  getSettings() { return this.data.settings || JSON.parse(JSON.stringify(DEFAULT_SETTINGS)); },
+  saveSettings(settings) {
+    this.data.settings = settings;
+    this.save();
+  },
+
+  // Stats
+  getMonthSales(sellerId, year, month) {
+    let sales = this.getSales(sellerId);
+    return sales.filter(s => {
+      const d = new Date(s.date);
+      return d.getFullYear() === year && d.getMonth() === month;
+    });
+  }
+};
+
+// ============================================================
+// COMMISSION CALCULATOR
+// ============================================================
+const Calculator = {
+  calculate(sale, context) {
+    const { stockCount, monthlySalesCount, platedCount, settings } = context;
+    const s = settings;
+    const breakdown = [];
+    let total = 0;
+
+    const metaThreshold = s.vehicleCommission.metaThreshold || 6;
+    const hasMeta = monthlySalesCount >= metaThreshold;
+    const registrationGoal = s.despachante.registrationGoalThreshold || 0.70;
+    const registrationNeeded = Math.round(monthlySalesCount * registrationGoal);
+    const hasRegistrationMeta = hasMeta && platedCount >= registrationNeeded;
+
+    // 1. Base vehicle commission
+    let vehicleComm = hasMeta ? s.vehicleCommission.meta : s.vehicleCommission.belowMeta;
+    if (hasMeta) {
+      const cappedSales = Math.min(monthlySalesCount, 10);
+      const bonusRate = s.vehicleCommission.bonusRates[cappedSales];
+      if (bonusRate) vehicleComm = vehicleComm * (1 + bonusRate);
+    }
+    breakdown.push({
+      category: 'Veículo (base)',
+      description: `${monthlySalesCount} venda(s) no mês × R$${fmt(vehicleComm)}/venda${hasMeta ? ' — META atingida' : ` — faltam ${metaThreshold - monthlySalesCount} para meta`}`,
+      value: vehicleComm,
+      hasMeta
+    });
+    total += vehicleComm;
+
+    // 2. IPVA Cliente
+    if (sale.ipvaClient && sale.ipvaClient.value > 0 && sale.ipvaClient.eligible) {
+      const rate = hasMeta ? s.ipva.withGoal : s.ipva.withoutGoal;
+      const comm = sale.ipvaClient.value * rate;
+      breakdown.push({ category: 'IPVA Cliente', description: `${pct(rate)} sobre R$${fmt(sale.ipvaClient.value)}`, value: comm });
+      total += comm;
+    }
+
+    // 3. IPVA Estoque
+    if (sale.ipvaStock && sale.ipvaStock.value > 0 && sale.ipvaStock.eligible) {
+      const rate = hasMeta ? s.ipva.withGoal : s.ipva.withoutGoal;
+      const comm = sale.ipvaStock.value * rate;
+      breakdown.push({ category: 'IPVA Estoque', description: `${pct(rate)} sobre R$${fmt(sale.ipvaStock.value)}`, value: comm });
+      total += comm;
+    }
+
+    // 4. Financing
+    if (sale.financing && sale.financing.value > 0 && sale.financing.rTier) {
+      const rRates = s.financing.rRates || { R1: 0.012, R2: 0.024, R3: 0.036, R4: 0.048 };
+      const rRate = rRates[sale.financing.rTier] || 0;
+      const grossR = sale.financing.value * rRate;
+      const taxDed = s.financing.taxDeduction !== undefined ? s.financing.taxDeduction : 0.25;
+      const netR = grossR * (1 - taxDed);
+
+      let commRate;
+      if (hasMeta && sale.financing.hasTAC)       commRate = s.financing.withGoalWithTAC;
+      else if (hasMeta && !sale.financing.hasTAC) commRate = s.financing.withGoalWithoutTAC;
+      else if (!hasMeta && sale.financing.hasTAC) commRate = s.financing.withoutGoalWithTAC;
+      else                                         commRate = s.financing.withoutGoalWithoutTAC;
+
+      const comm = netR * commRate;
+      const tacLabel = sale.financing.hasTAC ? ' + TAC' : '';
+      breakdown.push({
+        category: 'Financiamento',
+        description: `${sale.financing.rTier} (${pct(rRate)}) de R$${fmt(sale.financing.value)} = R$${fmt(grossR)} → −25% imp. = R$${fmt(netR)} × ${pct(commRate)}${tacLabel}`,
+        value: comm
+      });
+      total += comm;
+      if (sale.financing.hasTAC) {
+        breakdown.push({ category: 'TAC (cobrada do cliente)', description: 'Valor inegociável — não entra na base de comissão', value: 0, note: `R$${fmt(s.financing.tacValue)}` });
+      }
+    }
+
+    // 5. Seguro Safra
+    if (sale.hasInsurance) {
+      const comm = hasMeta ? s.insurance.withGoal : s.insurance.withoutGoal;
+      breakdown.push({ category: 'Seguro Safra', description: hasMeta ? 'Com meta' : 'Sem meta', value: comm });
+      total += comm;
+    }
+
+    // 6. Despachante
+    if (sale.hasDespachante) {
+      let comm;
+      let desc;
+      if (hasMeta && hasRegistrationMeta) {
+        comm = s.despachante.withBothGoals;
+        desc = `R$${fmt(s.despachante.withBothGoals)}/emplacamento — meta vendas (${monthlySalesCount}) + emplacamento (${platedCount}/${registrationNeeded} ✓)`;
+      } else if (hasMeta) {
+        comm = s.despachante.withSalesGoal;
+        desc = `R$${fmt(s.despachante.withSalesGoal)}/emplacamento — meta vendas ok, emplacamentos: ${platedCount}/${registrationNeeded} (faltam ${registrationNeeded - platedCount})`;
+      } else {
+        comm = s.despachante.withoutGoal;
+        desc = `R$${fmt(s.despachante.withoutGoal)}/emplacamento — sem meta de vendas (${monthlySalesCount}/${metaThreshold})`;
+      }
+      breakdown.push({ category: 'Despachante', description: desc, value: comm });
+      total += comm;
+    }
+
+    // 7. Excedente
+    if (sale.excedente && sale.excedente.value > 0) {
+      const rate = hasMeta ? s.excedente.withGoal : s.excedente.withoutGoal;
+      const comm = sale.excedente.value * rate;
+      const payNote = hasMeta ? ' (25% agora + 25% no salário)' : ' (no fechamento)';
+      breakdown.push({ category: 'Excedente', description: `${pct(rate)} sobre R$${fmt(sale.excedente.value)}${payNote}`, value: comm });
+      total += comm;
+    }
+
+    // 8. Consigned captation
+    if (sale.consigned && sale.consigned.captationProfit > 0) {
+      const comm = sale.consigned.captationProfit * s.consigned.captationRate;
+      breakdown.push({ category: 'Captação Consignado', description: `10% lucro R$${fmt(sale.consigned.captationProfit)}`, value: comm });
+      total += comm;
+    }
+
+    // 9. Services for consignor
+    if (sale.consigned && sale.consigned.servicesProfit > 0) {
+      const comm = sale.consigned.servicesProfit * s.consigned.servicesRate;
+      breakdown.push({ category: 'Serviços Consignado', description: `40% lucro serviços R$${fmt(sale.consigned.servicesProfit)}`, value: comm });
+      total += comm;
+    }
+
+    // 10. Stock purchase captation bonus
+    if (sale.stockCaptation && sale.stockCaptation.value > 0) {
+      const comm = sale.stockCaptation.value;
+      breakdown.push({ category: 'Captação para Estoque', description: `Veículo captado para compra`, value: comm });
+      total += comm;
+    }
+
+    return { total, breakdown, hasMeta, hasRegistrationMeta };
+  }
+};
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function fmt(n) { return Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function fmtR(n) { return 'R$ ' + fmt(n); }
+function pct(n) { return (n*100).toFixed(0)+'%'; }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
+function dateStr(d) { return new Date(d).toLocaleDateString('pt-BR'); }
+function monthName(m) { return ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][m]; }
+function currentMonthLabel() { const d = new Date(); return `${monthName(d.getMonth())} ${d.getFullYear()}`; }
+function getContext(sellerId) {
+  const settings = Store.getSettings();
+  const stock = Store.getActiveStock();
+  const stockCount = stock.length;
+  const now = new Date();
+  const monthlySales = Store.getMonthSales(sellerId, now.getFullYear(), now.getMonth());
+  const platedCount = monthlySales.filter(s => s.hasDespachante && s.isPlated).length;
+  return { stockCount, monthlySalesCount: monthlySales.length, platedCount, settings };
+}
+
+function showModal(html) {
+  const c = document.getElementById('modal-container');
+  c.innerHTML = `<div class="modal-backdrop" id="activeModal" onclick="if(event.target.id==='activeModal')closeModal()">${html}</div>`;
+}
+function closeModal() {
+  document.getElementById('modal-container').innerHTML = '';
+}
+
+function toast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = `alert alert-${type}`;
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:999;min-width:280px;box-shadow:0 4px 20px rgba(0,0,0,.15);animation:fadeIn .2s;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ============================================================
+// APP
+// ============================================================
+const App = {
+  currentUser: null,
+  currentPage: 'dashboard',
+
+  init() {
+    Store.init();
+    const saved = sessionStorage.getItem('tracaoUser');
+    if (saved) {
+      try {
+        const u = JSON.parse(saved);
+        const found = Store.getUserById(u.id);
+        if (found && found.active) { this.currentUser = found; this.showApp(); return; }
+      } catch(e) {}
+    }
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('appPage').classList.add('hidden');
+    document.getElementById('loginEmail').addEventListener('keydown', e => { if(e.key==='Enter') this.login(); });
+    document.getElementById('loginPassword').addEventListener('keydown', e => { if(e.key==='Enter') this.login(); });
+  },
+
+  login() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPassword').value;
+    const user = Store.getUsers().find(u => u.email === email && u.password === pass && u.active);
+    const errEl = document.getElementById('loginError');
+    if (!user) {
+      errEl.textContent = 'E-mail ou senha incorretos.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+    this.currentUser = user;
+    sessionStorage.setItem('tracaoUser', JSON.stringify({ id: user.id }));
+    this.showApp();
+  },
+
+  logout() {
+    sessionStorage.removeItem('tracaoUser');
+    this.currentUser = null;
+    document.getElementById('appPage').classList.add('hidden');
+    document.getElementById('appPage').style.display = 'none';
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('loginPassword').value = '';
+  },
+
+  showApp() {
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('appPage').classList.remove('hidden');
+    document.getElementById('appPage').style.display = 'flex';
+    const u = this.currentUser;
+    document.getElementById('sidebarUserName').textContent = u.name;
+    document.getElementById('sidebarUserRole').textContent = u.role === 'admin' ? 'Administrador' : 'Vendedor';
+    document.getElementById('sidebarAvatar').textContent = u.name.charAt(0).toUpperCase();
+    if (u.role === 'admin') {
+      document.getElementById('nav-config').classList.remove('hidden');
+      document.getElementById('nav-usuarios').classList.remove('hidden');
+    }
+    document.getElementById('headerDate').textContent = new Date().toLocaleDateString('pt-BR', {weekday:'long',day:'numeric',month:'long'});
+    this.navigate('dashboard');
+  },
+
+  navigate(page) {
+    this.currentPage = page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const pageEl = document.getElementById('page-' + page);
+    if (pageEl) pageEl.classList.add('active');
+    const navEl = document.querySelector(`.nav-item[data-page="${page}"]`);
+    if (navEl) navEl.classList.add('active');
+
+    const titles = {
+      dashboard: ['Dashboard', currentMonthLabel()],
+      vendas: ['Vendas', 'Registre e gerencie suas vendas'],
+      estoque: ['Estoque', 'Veículos disponíveis para venda'],
+      comissoes: ['Comissões', 'Detalhamento das comissões'],
+      relatorios: ['Relatórios', 'Resumo mensal e exportação'],
+      config: ['Configurações', 'Parâmetros de comissionamento'],
+      usuarios: ['Usuários', 'Gestão de vendedores e admins']
+    };
+    const [title, sub] = titles[page] || ['', ''];
+    document.getElementById('pageTitle').textContent = title;
+    document.getElementById('pageSubtitle').textContent = sub;
+
+    // Update meta badge
+    const ctx = getContext(this.currentUser.role === 'admin' ? null : this.currentUser.id);
+    const metaEl = document.getElementById('metaBadge');
+    const salesCount = ctx.monthlySalesCount;
+    const metaThreshold = ctx.settings.vehicleCommission.metaThreshold || 6;
+    if (salesCount >= metaThreshold) {
+      metaEl.className = 'meta-badge meta-atingida';
+      metaEl.innerHTML = `<svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> META: ${salesCount} vendas`;
+    } else {
+      metaEl.className = 'meta-badge meta-nao-atingida';
+      metaEl.innerHTML = `${salesCount}/${metaThreshold} vendas para meta`;
+    }
+
+    const renders = {
+      dashboard: () => this.renderDashboard(),
+      vendas: () => this.renderVendas(),
+      estoque: () => this.renderEstoque(),
+      comissoes: () => this.renderComissoes(),
+      relatorios: () => this.renderRelatorios(),
+      config: () => this.renderConfig(),
+      usuarios: () => this.renderUsuarios()
+    };
+    if (renders[page]) renders[page]();
+  },
+
+  // ============================================================
+  // ADMIN DASHBOARD
+  // ============================================================
+  renderDashboardAdmin() {
+    const now = new Date();
+    const settings = Store.getSettings();
+    const metaThreshold = settings.vehicleCommission.metaThreshold || 6;
+    const sellers = Store.getUsers().filter(u => u.active && u.role === 'seller');
+
+    // Per-vendor calculation
+    const vendorData = sellers.map(seller => {
+      const ctx = getContext(seller.id);
+      const sales = Store.getMonthSales(seller.id, now.getFullYear(), now.getMonth());
+      const hasMeta = sales.length >= metaThreshold;
+      const platedCount = sales.filter(s => s.hasDespachante && s.isPlated).length;
+      const regNeeded = Math.round(sales.length * (settings.despachante.registrationGoalThreshold || 0.70));
+      const hasRegMeta = hasMeta && platedCount >= regNeeded;
+      let totalComm = 0;
+      const catTotals = {};
+      sales.forEach(sale => {
+        const res = Calculator.calculate(sale, ctx);
+        totalComm += res.total;
+        res.breakdown.forEach(b => {
+          catTotals[b.category] = (catTotals[b.category] || 0) + (b.value || 0);
+        });
+      });
+      return { seller, sales, salesCount: sales.length, hasMeta, hasRegMeta, platedCount, regNeeded, totalComm, catTotals };
+    });
+
+    const totalSales   = vendorData.reduce((s,v) => s + v.salesCount, 0);
+    const totalComm    = vendorData.reduce((s,v) => s + v.totalComm, 0);
+    const withMeta     = vendorData.filter(v => v.hasMeta).length;
+    const withRegMeta  = vendorData.filter(v => v.hasRegMeta).length;
+
+    // Combined category totals (all vendors)
+    const allCats = {};
+    vendorData.forEach(v => Object.entries(v.catTotals).forEach(([c,val]) => { allCats[c] = (allCats[c]||0) + val; }));
+
+    // Vendor rows for the table
+    const CAT_COLS = ['Veículo (base)','Financiamento','IPVA Cliente','IPVA Estoque','Seguro Safra','Despachante','Excedente'];
+    const vendorRows = vendorData.map(v => {
+      const metaBadge = v.hasMeta
+        ? `<span class="badge badge-green">✓ Meta</span>`
+        : `<span class="badge badge-red">${v.salesCount}/${metaThreshold}</span>`;
+      const regBadge = v.hasRegMeta
+        ? `<span class="badge badge-green">${v.platedCount}/${v.regNeeded}</span>`
+        : v.hasMeta
+          ? `<span class="badge badge-yellow">${v.platedCount}/${v.regNeeded}</span>`
+          : `<span class="badge badge-gray">—</span>`;
+      const catCells = CAT_COLS.map(c => `<td style="text-align:right;color:${(v.catTotals[c]||0)>0?'#15803d':'#94a3b8'};">${(v.catTotals[c]||0)>0?fmtR(v.catTotals[c]):'—'}</td>`).join('');
+      return `<tr>
+        <td><strong>${v.seller.name}</strong><br><span style="font-size:.72rem;color:#94a3b8;">${v.seller.email}</span></td>
+        <td style="text-align:center;font-weight:700;">${v.salesCount}</td>
+        <td style="text-align:center;">${metaBadge}</td>
+        <td style="text-align:center;">${regBadge}</td>
+        ${catCells}
+        <td style="text-align:right;font-weight:800;color:#15803d;font-size:1rem;">${fmtR(v.totalComm)}</td>
+        <td><button class="btn btn-secondary btn-sm" onclick="App.navigate('vendas')">Ver vendas</button></td>
+      </tr>`;
+    }).join('');
+
+    // Totals row
+    const totalsRow = `<tr style="background:#f0fdf4;font-weight:700;">
+      <td>TOTAL</td>
+      <td style="text-align:center;">${totalSales}</td>
+      <td style="text-align:center;"><span class="badge badge-green">${withMeta}/${sellers.length}</span></td>
+      <td style="text-align:center;"><span class="badge badge-green">${withRegMeta}/${sellers.length}</span></td>
+      ${CAT_COLS.map(c=>`<td style="text-align:right;color:#15803d;">${allCats[c]>0?fmtR(allCats[c]):'—'}</td>`).join('')}
+      <td style="text-align:right;color:#15803d;font-size:1.05rem;">${fmtR(totalComm)}</td>
+      <td></td>
+    </tr>`;
+
+    // Category summary cards
+    const catCards = Object.entries(allCats).filter(([,v])=>v>0).map(([cat,val])=>`
+      <div style="background:white;border-radius:10px;padding:12px 16px;box-shadow:0 1px 3px rgba(0,0,0,.07);">
+        <div style="font-size:.7rem;font-weight:600;color:#64748b;">${cat.toUpperCase()}</div>
+        <div style="font-size:1.1rem;font-weight:800;color:#15803d;margin-top:2px;">${fmtR(val)}</div>
+      </div>`).join('');
+
+    // CSV export function
+    const csvData = [
+      ['Vendedor','Email','Vendas','Meta','Emplaçamentos','Veículo Base','Financiamento','IPVA Cliente','IPVA Estoque','Seguro Safra','Despachante','Excedente','Total'],
+      ...vendorData.map(v => [
+        v.seller.name, v.seller.email, v.salesCount,
+        v.hasMeta ? 'Sim' : 'Não',
+        `${v.platedCount}/${v.regNeeded}`,
+        ...CAT_COLS.map(c => (v.catTotals[c]||0).toFixed(2)),
+        v.totalComm.toFixed(2)
+      ])
+    ].map(r => r.join(';')).join('\n');
+
+    document.getElementById('dashboardContent').innerHTML = `
+      <div style="margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;">
+          <div class="card" style="padding:18px;">
+            <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:6px;">VENDEDORES ATIVOS</div>
+            <div class="stat-value">${sellers.length}</div>
+          </div>
+          <div class="card" style="padding:18px;">
+            <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:6px;">TOTAL VENDAS — ${monthName(now.getMonth()).toUpperCase()}</div>
+            <div class="stat-value">${totalSales}</div>
+          </div>
+          <div class="card" style="padding:18px;">
+            <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:6px;">TOTAL COMISSÕES</div>
+            <div class="stat-value" style="color:#15803d;">${fmtR(totalComm)}</div>
+          </div>
+          <div class="card" style="padding:18px;">
+            <div style="font-size:.72rem;font-weight:600;color:#64748b;margin-bottom:6px;">BATERAM A META</div>
+            <div class="stat-value" style="color:${withMeta===sellers.length?'#15803d':'#f59e0b'};">${withMeta}/${sellers.length}</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
+          ${catCards}
+        </div>
+      </div>
+
+      <div class="card" style="overflow:hidden;margin-bottom:20px;">
+        <div style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;gap:10px;">
+          <h3 style="font-weight:700;color:#0f172a;">Desempenho por Vendedor — ${monthName(now.getMonth())} ${now.getFullYear()}</h3>
+          <button class="btn btn-secondary btn-sm" onclick="App.exportCSV()">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            Exportar Folha CSV
+          </button>
+        </div>
+        ${sellers.length === 0 ? `<div style="padding:40px;text-align:center;color:#94a3b8;">Nenhum vendedor cadastrado.</div>` : `
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th>Vendedor</th><th style="text-align:center;">Vendas</th><th style="text-align:center;">Meta</th><th style="text-align:center;">Emplaçamentos</th>
+              ${CAT_COLS.map(c=>`<th style="text-align:right;">${c.replace(' (base)','')}</th>`).join('')}
+              <th style="text-align:right;">Total</th><th></th>
+            </tr></thead>
+            <tbody>${vendorRows}${totalsRow}</tbody>
+          </table>
+        </div>`}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card" style="padding:20px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:14px;font-size:.95rem;">Estoque de Veículos</h3>
+          ${(() => {
+            const stock = Store.getActiveStock();
+            return stock.length === 0
+              ? `<div style="color:#94a3b8;font-size:.875rem;">Estoque vazio.</div>`
+              : stock.slice(0,5).map(s=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:.825rem;"><span>${s.model||'—'} ${s.year||''}</span><span class="badge badge-green">${s.plate||'—'}</span></div>`).join('') +
+                (stock.length>5?`<div style="font-size:.75rem;color:#64748b;margin-top:6px;">+${stock.length-5} veículo(s)</div>`:'');
+          })()}
+        </div>
+        <div class="card" style="padding:20px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:14px;font-size:.95rem;">Última atividade</h3>
+          ${(() => {
+            const recent = Store.getSales(null).slice(0,5);
+            return recent.length === 0
+              ? `<div style="color:#94a3b8;font-size:.875rem;">Nenhuma venda registrada.</div>`
+              : recent.map(s=>{
+                const seller = Store.getUserById(s.sellerId);
+                const ctx2 = getContext(s.sellerId);
+                const res = Calculator.calculate(s, ctx2);
+                return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:.825rem;">
+                  <div><strong>${s.vehicle||'—'}</strong><br><span style="color:#64748b;">${seller?seller.name:'?'} · ${dateStr(s.date)}</span></div>
+                  <div style="color:#15803d;font-weight:700;white-space:nowrap;">${fmtR(res.total)}</div>
+                </div>`;
+              }).join('');
+          })()}
+        </div>
+      </div>
+    `;
+
+    // Store CSV for export
+    this._csvData = csvData;
+  },
+
+  exportCSV() {
+    const csv = this._csvData || '';
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `folha_tracao_${new Date().toISOString().substr(0,7)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+
+  // ============================================================
+  // DASHBOARD
+  // ============================================================
+  renderDashboard() {
+    const u = this.currentUser;
+    const now = new Date();
+    const isAdmin = u.role === 'admin';
+    const sellerId = isAdmin ? null : u.id;
+
+    if (isAdmin) { this.renderDashboardAdmin(); return; }
+    const ctx = getContext(sellerId);
+    const { stockCount, settings } = ctx;
+    const metaThreshold = settings.vehicleCommission.metaThreshold || 6;
+
+    const monthlySales = Store.getMonthSales(sellerId, now.getFullYear(), now.getMonth());
+    const hasMeta = monthlySales.length >= metaThreshold;
+    let totalComm = 0;
+    monthlySales.forEach(sale => {
+      const res = Calculator.calculate(sale, ctx);
+      totalComm += res.total;
+    });
+
+    const allSales = Store.getSales(sellerId);
+    const activeStock = Store.getActiveStock();
+
+    const progressPct = Math.min(100, Math.round((monthlySales.length / metaThreshold) * 100));
+    const platedCount = monthlySales.filter(s => s.hasDespachante && s.isPlated).length;
+    const registrationNeeded = Math.round(monthlySales.length * (settings.despachante.registrationGoalThreshold || 0.70));
+    const hasRegistrationMeta = hasMeta && platedCount >= registrationNeeded;
+
+    // Recent sales
+    const recent = monthlySales.slice(0, 5);
+
+    let recentRows = recent.map(sale => {
+      const res = Calculator.calculate(sale, ctx);
+      const seller = Store.getUserById(sale.sellerId);
+      return `<tr>
+        <td>${dateStr(sale.date)}</td>
+        <td><strong>${sale.vehicle || '-'}</strong><br><span style="color:#64748b;font-size:.75rem;">${sale.plate || ''}</span></td>
+        ${isAdmin ? `<td>${seller ? seller.name : '-'}</td>` : ''}
+        <td><span class="badge ${sale.type==='consignado'?'badge-purple':sale.type==='repasse'?'badge-yellow':'badge-blue'}">${sale.type||'estoque'}</span></td>
+        <td style="color:#22c55e;font-weight:600;">${fmtR(res.total)}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="App.openSaleModal('${sale.id}')">Ver</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('dashboardContent').innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+        <div class="card" style="padding:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:.78rem;font-weight:600;color:#64748b;">Vendas no Mês</span>
+            <div style="width:36px;height:36px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#2563eb" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">${monthlySales.length}</div>
+          <div class="stat-label">veículos vendidos</div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:.78rem;font-weight:600;color:#64748b;">Comissões no Mês</span>
+            <div style="width:36px;height:36px;background:#f0fdf4;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#22c55e" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" style="color:#22c55e;">${fmtR(totalComm)}</div>
+          <div class="stat-label">total a receber</div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:.78rem;font-weight:600;color:#64748b;">Meta de Vendas</span>
+            <div style="width:36px;height:36px;background:${hasMeta?'#f0fdf4':'#fef2f2'};border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="${hasMeta?'#22c55e':'#ef4444'}" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" style="color:${hasMeta?'#22c55e':'#ef4444'};">${monthlySales.length}<span style="font-size:1rem;color:#94a3b8;">/${metaThreshold}</span></div>
+          <div class="stat-label">vendas no mês</div>
+          <div class="progress-bar" style="margin-top:10px;">
+            <div class="progress-fill" style="width:${progressPct}%;background:${hasMeta?'#22c55e':'#ef4444'};"></div>
+          </div>
+          <div style="font-size:.72rem;color:#64748b;margin-top:4px;">${hasMeta ? 'Meta atingida!' : `Faltam ${metaThreshold - monthlySales.length} venda(s) para a meta`}</div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span style="font-size:.78rem;font-weight:600;color:#64748b;">Meta Emplacamento</span>
+            <div style="width:36px;height:36px;background:${hasRegistrationMeta?'#f0fdf4':hasMeta?'#fffbeb':'#f1f5f9'};border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="${hasRegistrationMeta?'#22c55e':hasMeta?'#f59e0b':'#94a3b8'}" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" style="font-size:1.2rem;color:${hasRegistrationMeta?'#22c55e':hasMeta?'#f59e0b':'#94a3b8'};">${platedCount}<span style="font-size:1rem;color:#94a3b8;">/${hasMeta ? registrationNeeded : '—'}</span></div>
+          <div class="stat-label">${hasRegistrationMeta ? `✓ R$150 por emplacamento` : hasMeta ? `emplacamentos (precisam ${registrationNeeded} para R$150/un)` : 'Precisa de 6 vendas primeiro'}</div>
+        </div>
+      </div>
+
+      ${hasMeta ? `
+        <div class="alert alert-success" style="margin-bottom:20px;display:flex;align-items:center;gap:8px;">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          <div><strong>META DE VENDAS ATINGIDA!</strong> ${monthlySales.length} venda(s) este mês — comissões potencializadas.
+          ${hasRegistrationMeta ? ` <strong>+ Meta de emplacamento atingida!</strong> R$150 por emplacamento (${platedCount} × R$150 = R$${fmt(platedCount * 150)}).` : registrationNeeded > 0 ? ` Emplacamentos: ${platedCount}/${registrationNeeded} — faltam ${registrationNeeded - platedCount} para subir de R$100 para R$150 por emplacamento.` : ''}</div>
+        </div>` : `
+        <div class="alert alert-warning" style="margin-bottom:20px;">
+          <strong>Meta não atingida.</strong> Você vendeu ${monthlySales.length} veículo(s) este mês. Faltam ${metaThreshold - monthlySales.length} venda(s) para atingir a meta e potencializar todas as comissões.
+        </div>`}
+
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f1f5f9;">
+          <h3 style="font-weight:700;color:#0f172a;">Vendas Recentes — ${monthName(now.getMonth())}</h3>
+          <button class="btn btn-primary btn-sm" onclick="App.openSaleModal()">+ Nova Venda</button>
+        </div>
+        ${recent.length === 0 ? `<div style="padding:40px;text-align:center;color:#94a3b8;">Nenhuma venda registrada este mês.<br><button class="btn btn-primary" style="margin-top:16px;" onclick="App.openSaleModal()">Registrar primeira venda</button></div>` : `
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th>Data</th><th>Veículo</th>${isAdmin?'<th>Vendedor</th>':''}
+              <th>Tipo</th><th>Comissão</th><th></th>
+            </tr></thead>
+            <tbody>${recentRows}</tbody>
+          </table>
+        </div>
+        ${monthlySales.length > 5 ? `<div style="padding:12px 20px;text-align:center;"><button class="btn btn-secondary btn-sm" onclick="App.navigate('vendas')">Ver todas as ${monthlySales.length} vendas</button></div>` : ''}`}
+      </div>
+    `;
+  },
+
+  // ============================================================
+  // VENDAS
+  // ============================================================
+  renderVendas() {
+    const u = this.currentUser;
+    const isAdmin = u.role === 'admin';
+    const sellerId = isAdmin ? null : u.id;
+    const ctx = getContext(sellerId);
+    const sales = Store.getSales(sellerId);
+
+    let rows = sales.map(sale => {
+      const res = Calculator.calculate(sale, ctx);
+      const seller = Store.getUserById(sale.sellerId);
+      return `<tr>
+        <td>${dateStr(sale.date)}</td>
+        <td><strong>${sale.vehicle || '-'}</strong><br><span style="color:#64748b;font-size:.75rem;">${sale.plate || ''}</span></td>
+        ${isAdmin ? `<td>${seller ? seller.name : '-'}</td>` : ''}
+        <td><span class="badge ${sale.type==='consignado'?'badge-purple':sale.type==='repasse'?'badge-yellow':'badge-blue'}">${sale.type||'estoque'}</span></td>
+        <td>${sale.financing && sale.financing.value > 0 && sale.financing.rTier ? `<span class="badge badge-green">${sale.financing.rTier}${sale.financing.hasTAC?' + TAC':''}</span>` : '<span class="badge badge-gray">Não</span>'}</td>
+        <td>${sale.hasInsurance ? '<span class="badge badge-green">Sim</span>' : '<span class="badge badge-gray">Não</span>'}</td>
+        <td style="color:#22c55e;font-weight:700;">${fmtR(res.total)}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="App.openSaleModal('${sale.id}')" style="margin-right:4px;">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="App.deleteSale('${sale.id}')">Del</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('vendasContent').innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:.875rem;color:#64748b;">${sales.length} venda(s) registrada(s)</div>
+        <button class="btn btn-primary" onclick="App.openSaleModal()">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Nova Venda
+        </button>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        ${sales.length === 0 ? `<div style="padding:60px;text-align:center;color:#94a3b8;"><svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#cbd5e1" stroke-width="1.5" style="margin:0 auto 16px;display:block;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><strong>Nenhuma venda cadastrada</strong><br><span style="font-size:.875rem;">Clique em "Nova Venda" para começar.</span></div>` : `
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th>Data</th><th>Veículo</th>${isAdmin?'<th>Vendedor</th>':''}
+              <th>Tipo</th><th>Financiamento</th><th>Seguro</th><th>Comissão Total</th><th>Ações</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`}
+      </div>
+    `;
+  },
+
+  // ============================================================
+  // ESTOQUE
+  // ============================================================
+  renderEstoque() {
+    const stock = Store.getStock();
+    const activeCount = stock.filter(s => s.status === 'available').length;
+    const reservedCount = stock.filter(s => s.status === 'reserved').length;
+
+    let rows = stock.map(item => {
+      const statusLabel = item.status === 'available' ? '<span class="badge badge-green">Disponível</span>' :
+                          item.status === 'sold' ? '<span class="badge badge-blue">Vendido</span>' :
+                          '<span class="badge badge-gray">Reservado</span>';
+      return `<tr>
+        <td><strong>${item.plate || '-'}</strong></td>
+        <td>${item.model || '-'}</td>
+        <td>${item.year || '-'}</td>
+        <td>${item.color || '-'}</td>
+        <td>${dateStr(item.entryDate)}</td>
+        <td>${statusLabel}</td>
+        <td>${item.notes || '-'}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="App.openStockModal('${item.id}')" style="margin-right:4px;">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="App.deleteStock('${item.id}')">Del</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('estoqueContent').innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px;">
+        <div class="card" style="padding:16px;text-align:center;">
+          <div style="font-size:2rem;font-weight:800;color:#22c55e;">${activeCount}</div>
+          <div style="font-size:.78rem;color:#64748b;margin-top:4px;">Disponíveis para venda</div>
+        </div>
+        <div class="card" style="padding:16px;text-align:center;">
+          <div style="font-size:2rem;font-weight:800;color:#f59e0b;">${reservedCount}</div>
+          <div style="font-size:.78rem;color:#64748b;margin-top:4px;">Reservados</div>
+        </div>
+        <div class="card" style="padding:16px;text-align:center;">
+          <div style="font-size:2rem;font-weight:800;color:#64748b;">${stock.filter(s=>s.status==='sold').length}</div>
+          <div style="font-size:.78rem;color:#64748b;margin-top:4px;">Vendidos (histórico)</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:.875rem;color:#64748b;">${stock.length} veículo(s) no cadastro</div>
+        <button class="btn btn-primary" onclick="App.openStockModal()">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Adicionar Veículo
+        </button>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        ${stock.length === 0 ? `<div style="padding:60px;text-align:center;color:#94a3b8;"><strong>Estoque vazio</strong><br><span style="font-size:.875rem;">Adicione veículos ao estoque.</span></div>` : `
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Placa</th><th>Modelo</th><th>Ano</th><th>Cor</th><th>Entrada</th><th>Status</th><th>Obs.</th><th>Ações</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`}
+      </div>
+    `;
+  },
+
+  // ============================================================
+  // COMISSÕES
+  // ============================================================
+  renderComissoes() {
+    const u = this.currentUser;
+    const isAdmin = u.role === 'admin';
+    const sellerId = isAdmin ? null : u.id;
+    const ctx = getContext(sellerId);
+    const now = new Date();
+    const sales = Store.getMonthSales(sellerId, now.getFullYear(), now.getMonth());
+
+    const metaThreshold = ctx.settings.vehicleCommission.metaThreshold || 6;
+    const hasMeta = sales.length >= metaThreshold;
+
+    // Collect all commission items grouped by category
+    const CATEGORY_ORDER = [
+      'Veículo (base)', 'Financiamento', 'TAC (cobrada do cliente)',
+      'IPVA Cliente', 'IPVA Estoque', 'Seguro Safra', 'Despachante',
+      'Excedente', 'Captação Consignado', 'Serviços Consignado', 'Captação para Estoque'
+    ];
+    const CATEGORY_STYLE = {
+      'Veículo (base)':          { color: '#1d4ed8', bg: '#eff6ff',  border: '#bfdbfe' },
+      'Financiamento':           { color: '#6d28d9', bg: '#f5f3ff',  border: '#ddd6fe' },
+      'TAC (cobrada do cliente)':{ color: '#92400e', bg: '#fffbeb',  border: '#fde68a' },
+      'IPVA Cliente':            { color: '#0e7490', bg: '#ecfeff',  border: '#a5f3fc' },
+      'IPVA Estoque':            { color: '#0e7490', bg: '#ecfeff',  border: '#a5f3fc' },
+      'Seguro Safra':            { color: '#b45309', bg: '#fffbeb',  border: '#fde68a' },
+      'Despachante':             { color: '#15803d', bg: '#f0fdf4',  border: '#bbf7d0' },
+      'Excedente':               { color: '#b91c1c', bg: '#fef2f2',  border: '#fecaca' },
+      'Captação Consignado':     { color: '#0f766e', bg: '#f0fdfa',  border: '#99f6e4' },
+      'Serviços Consignado':     { color: '#0f766e', bg: '#f0fdfa',  border: '#99f6e4' },
+      'Captação para Estoque':   { color: '#7e22ce', bg: '#faf5ff',  border: '#e9d5ff' },
+    };
+
+    const groups = {}; // category -> { items[], subtotal }
+    let grandTotal = 0;
+
+    sales.forEach((sale, idx) => {
+      const res = Calculator.calculate(sale, ctx);
+      grandTotal += res.total;
+      const sellerUser = Store.getUserById(sale.sellerId);
+      const label = (sale.vehicle || `Venda ${idx + 1}`) + (sale.plate ? ` (${sale.plate})` : '');
+      const sellerLabel = isAdmin && sellerUser ? ` — ${sellerUser.name}` : '';
+
+      res.breakdown.forEach(b => {
+        if (!groups[b.category]) groups[b.category] = { items: [], subtotal: 0 };
+        groups[b.category].items.push({
+          label: label + sellerLabel,
+          date: dateStr(sale.date),
+          description: b.description,
+          value: b.value,
+          note: b.note || ''
+        });
+        groups[b.category].subtotal += b.value || 0;
+      });
+    });
+
+    const orderedKeys = [
+      ...CATEGORY_ORDER.filter(k => groups[k]),
+      ...Object.keys(groups).filter(k => !CATEGORY_ORDER.includes(k))
+    ];
+
+    // Build one card per category
+    const groupBlocks = orderedKeys.map(cat => {
+      const g = groups[cat];
+      const cs = CATEGORY_STYLE[cat] || { color: '#475569', bg: '#f8fafc', border: '#e2e8f0' };
+      const payItems  = g.items.filter(i => i.value > 0);
+      const infoItems = g.items.filter(i => i.value === 0);
+
+      const payRows = payItems.map((item, i) => `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;padding:10px 0;${i < payItems.length-1 ? 'border-bottom:1px solid #f1f5f9;' : ''}">
+          <div style="flex:1;min-width:0;padding-right:16px;">
+            <div style="font-size:.825rem;font-weight:600;color:#1e293b;">${item.label}</div>
+            <div style="font-size:.72rem;color:#64748b;margin-top:2px;line-height:1.4;">${item.description}</div>
+            ${item.note ? `<div style="font-size:.7rem;color:#f59e0b;margin-top:2px;">ℹ ${item.note}</div>` : ''}
+          </div>
+          <div style="font-size:.95rem;font-weight:800;color:#16a34a;white-space:nowrap;">${fmtR(item.value)}</div>
+        </div>`).join('');
+
+      const infoRows = infoItems.map(item => `
+        <div style="font-size:.72rem;color:#92400e;background:#fffbeb;border-radius:6px;padding:6px 10px;margin-top:4px;">
+          ℹ ${item.label}: ${item.description}${item.note ? ' — ' + item.note : ''}
+        </div>`).join('');
+
+      return `
+        <div class="card" style="overflow:hidden;margin-bottom:14px;border-left:3px solid ${cs.border};">
+          <div style="padding:12px 18px;background:${cs.bg};display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid ${cs.border};">
+            <div style="font-weight:700;color:${cs.color};font-size:.9rem;">${cat}</div>
+            <div style="font-size:1.15rem;font-weight:800;color:${g.subtotal > 0 ? '#16a34a' : '#94a3b8'};">${fmtR(g.subtotal)}</div>
+          </div>
+          ${payItems.length > 0 ? `<div style="padding:6px 18px 10px;">${payRows}</div>` : ''}
+          ${infoRows ? `<div style="padding:6px 18px 10px;">${infoRows}</div>` : ''}
+          ${payItems.length === 0 && !infoRows ? `<div style="padding:12px 18px;font-size:.8rem;color:#94a3b8;">Nenhuma ocorrência este mês.</div>` : ''}
+        </div>`;
+    }).join('');
+
+    // Summary chips for the totals footer
+    const summaryChips = orderedKeys
+      .filter(k => groups[k].subtotal > 0)
+      .map(k => {
+        const cs = CATEGORY_STYLE[k] || { color: '#475569', bg: '#f1f5f9', border: '#e2e8f0' };
+        return `<div style="background:${cs.bg};border:1px solid ${cs.border};border-radius:8px;padding:6px 12px;">
+          <div style="font-size:.68rem;font-weight:600;color:${cs.color};">${k}</div>
+          <div style="font-size:.875rem;font-weight:800;color:#16a34a;">${fmtR(groups[k].subtotal)}</div>
+        </div>`;
+      }).join('');
+
+    document.getElementById('comissoesContent').innerHTML = `
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;" class="no-print">
+        <div>
+          <div style="font-size:.72rem;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.05em;">${monthName(now.getMonth())} ${now.getFullYear()} · ${sales.length} venda(s) · ${hasMeta ? '<span style="color:#16a34a;">META ATINGIDA</span>' : `<span style="color:#f59e0b;">faltam ${metaThreshold - sales.length} para meta</span>`}</div>
+          <div style="font-size:2rem;font-weight:800;color:#16a34a;margin-top:4px;">${fmtR(grandTotal)}</div>
+        </div>
+        <button class="btn btn-secondary" onclick="window.print()">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          Imprimir
+        </button>
+      </div>
+
+      ${sales.length === 0
+        ? `<div class="card" style="padding:60px;text-align:center;color:#94a3b8;">Nenhuma venda registrada este mês.</div>`
+        : `${groupBlocks}
+           <div class="card" style="padding:20px;border-top:3px solid #16a34a;">
+             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+               <div style="font-size:.875rem;font-weight:700;color:#0f172a;text-transform:uppercase;letter-spacing:.03em;">Total Geral — ${monthName(now.getMonth())} ${now.getFullYear()}</div>
+               <div style="font-size:1.75rem;font-weight:800;color:#16a34a;">${fmtR(grandTotal)}</div>
+             </div>
+             <div style="display:flex;flex-wrap:wrap;gap:8px;">${summaryChips}</div>
+           </div>`
+      }
+    `;
+  },
+
+  // ============================================================
+  // RELATÓRIOS
+  // ============================================================
+  renderRelatorios() {
+    const u = this.currentUser;
+    const isAdmin = u.role === 'admin';
+    const sellerId = isAdmin ? null : u.id;
+    const ctx = getContext(sellerId);
+    const now = new Date();
+
+    // Last 6 months
+    let months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const sales = Store.getMonthSales(sellerId, d.getFullYear(), d.getMonth());
+      let total = 0;
+      sales.forEach(sale => { total += Calculator.calculate(sale, ctx).total; });
+      months.push({ label: monthName(d.getMonth()).substr(0,3), year: d.getFullYear(), month: d.getMonth(), count: sales.length, total });
+    }
+
+    let monthRows = months.map(m => `<tr>
+      <td>${m.label}/${m.year}</td>
+      <td>${m.count}</td>
+      <td style="color:#22c55e;font-weight:600;">${fmtR(m.total)}</td>
+      <td>${m.count > 0 ? fmtR(m.total / m.count) : '—'}</td>
+    </tr>`).join('');
+
+    const maxTotal = Math.max(...months.map(m => m.total), 1);
+
+    let bars = months.map(m => {
+      const h = Math.round((m.total / maxTotal) * 100);
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div style="font-size:.7rem;color:#22c55e;font-weight:600;">${m.total > 0 ? fmtR(m.total).replace('R$ ','R$') : ''}</div>
+        <div style="flex:1;display:flex;align-items:flex-end;width:100%;max-width:50px;">
+          <div style="width:100%;height:${h}%;min-height:4px;background:${h===100?'#2563eb':'#93c5fd'};border-radius:4px 4px 0 0;transition:height .3s;"></div>
+        </div>
+        <div style="font-size:.72rem;color:#64748b;">${m.label}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('relatoriosContent').innerHTML = `
+      <div class="card" style="padding:20px;margin-bottom:20px;">
+        <h3 style="font-weight:700;color:#0f172a;margin-bottom:16px;">Comissões — Últimos 6 Meses</h3>
+        <div style="display:flex;align-items:flex-end;gap:8px;height:140px;padding-bottom:0;">${bars}</div>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;"><h3 style="font-weight:700;color:#0f172a;">Resumo Mensal</h3></div>
+        <table>
+          <thead><tr><th>Mês</th><th>Vendas</th><th>Comissão Total</th><th>Média por Venda</th></tr></thead>
+          <tbody>${monthRows}</tbody>
+        </table>
+      </div>
+    `;
+  },
+
+  // ============================================================
+  // CONFIGURAÇÕES
+  // ============================================================
+  renderConfig() {
+    if (this.currentUser.role !== 'admin') return;
+    const s = Store.getSettings();
+
+    document.getElementById('configContent').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+        <div class="card" style="padding:24px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:4px;">Comissão por Veículo Vendido</h3>
+          <p style="font-size:.75rem;color:#64748b;margin-bottom:16px;">Valor pago por <strong>cada</strong> veículo vendido no mês. A meta retroage para todas as vendas do mês. Teto em 10 vendas.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">1–5 vendas (sem meta) R$</label>
+              <input class="form-input" id="cfg_belowMeta" type="number" value="${s.vehicleCommission.belowMeta}">
+            </div>
+            <div>
+              <label class="form-label">6+ vendas (meta) R$</label>
+              <input class="form-input" id="cfg_meta" type="number" value="${s.vehicleCommission.meta}">
+            </div>
+            <div>
+              <label class="form-label">Nº de vendas para a META</label>
+              <input class="form-input" id="cfg_metaThreshold" type="number" value="${s.vehicleCommission.metaThreshold||6}">
+            </div>
+          </div>
+          <div style="margin-top:16px;margin-bottom:8px;"><strong style="font-size:.8rem;color:#374151;">Bônus progressivo (% adicional sobre R$${s.vehicleCommission.meta}) — teto em 10 vendas</strong></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            ${[7,8,9,10].map(n => {
+              const rate = s.vehicleCommission.bonusRates[n]||0;
+              const result = s.vehicleCommission.meta * (1 + rate);
+              return `<div>
+                <label class="form-label">${n} vendas (+${(rate*100).toFixed(0)}% = R$${result.toFixed(2)}/venda)</label>
+                <input class="form-input" id="cfg_bonus${n}" type="number" step="1" value="${(rate*100).toFixed(0)}">
+              </div>`;
+            }).join('')}
+          </div>
+          <div style="margin-top:16px;background:#f8fafc;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;">
+            <div style="padding:10px 14px;background:#f1f5f9;font-size:.72rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.05em;">Tabela de progressão</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);text-align:center;">
+              ${[
+                {label:'1–5',val:s.vehicleCommission.belowMeta,meta:false},
+                {label:'6',val:s.vehicleCommission.meta,meta:true},
+                {label:'7',val:s.vehicleCommission.meta*(1+(s.vehicleCommission.bonusRates[7]||0)),meta:true},
+                {label:'8',val:s.vehicleCommission.meta*(1+(s.vehicleCommission.bonusRates[8]||0)),meta:true},
+                {label:'9',val:s.vehicleCommission.meta*(1+(s.vehicleCommission.bonusRates[9]||0)),meta:true},
+                {label:'10+',val:s.vehicleCommission.meta*(1+(s.vehicleCommission.bonusRates[10]||0)),meta:true,cap:true},
+              ].map(r=>`<div style="padding:10px 6px;border-right:1px solid #e2e8f0;">
+                <div style="font-size:.75rem;font-weight:700;color:${r.meta?'#1d4ed8':'#64748b'};">${r.label}</div>
+                <div style="font-size:.8rem;font-weight:800;color:${r.cap?'#22c55e':r.meta?'#0f172a':'#64748b'};">R$${r.val.toFixed(0)}</div>
+                ${r.cap?'<div style="font-size:.65rem;color:#22c55e;">teto</div>':''}
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:24px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:16px;">IPVA (% sobre valor)</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">Sem meta (%)</label>
+              <input class="form-input" id="cfg_ipvaNoMeta" type="number" step="1" value="${(s.ipva.withoutGoal*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Com meta (%)</label>
+              <input class="form-input" id="cfg_ipvaWithMeta" type="number" step="1" value="${(s.ipva.withGoal*100).toFixed(0)}">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:24px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:4px;">Financiamento</h3>
+          <p style="font-size:.75rem;color:#64748b;margin-bottom:14px;">Valor financiado × alíquota R → −impostos → × taxa bonificação</p>
+          <div style="margin-bottom:10px;"><strong style="font-size:.8rem;color:#374151;">Alíquotas R (% do valor financiado)</strong></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div>
+              <label class="form-label">R1 (%)</label>
+              <input class="form-input" id="cfg_rR1" type="number" step="0.1" value="${((s.financing.rRates&&s.financing.rRates.R1||0.012)*100).toFixed(1)}">
+            </div>
+            <div>
+              <label class="form-label">R2 (%)</label>
+              <input class="form-input" id="cfg_rR2" type="number" step="0.1" value="${((s.financing.rRates&&s.financing.rRates.R2||0.024)*100).toFixed(1)}">
+            </div>
+            <div>
+              <label class="form-label">R3 (%)</label>
+              <input class="form-input" id="cfg_rR3" type="number" step="0.1" value="${((s.financing.rRates&&s.financing.rRates.R3||0.036)*100).toFixed(1)}">
+            </div>
+            <div>
+              <label class="form-label">R4 (%)</label>
+              <input class="form-input" id="cfg_rR4" type="number" step="0.1" value="${((s.financing.rRates&&s.financing.rRates.R4||0.048)*100).toFixed(1)}">
+            </div>
+            <div>
+              <label class="form-label">Desconto impostos (%)</label>
+              <input class="form-input" id="cfg_taxDed" type="number" step="1" value="${((s.financing.taxDeduction!==undefined?s.financing.taxDeduction:0.25)*100).toFixed(0)}">
+            </div>
+          </div>
+          <div style="margin-bottom:10px;"><strong style="font-size:.8rem;color:#374151;">Taxa de bonificação (sobre valor líquido)</strong></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">Sem meta, sem TAC (%)</label>
+              <input class="form-input" id="cfg_finNoMetaNoTAC" type="number" step="1" value="${(s.financing.withoutGoalWithoutTAC*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Sem meta, com TAC (%)</label>
+              <input class="form-input" id="cfg_finNoMetaTAC" type="number" step="1" value="${(s.financing.withoutGoalWithTAC*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Com meta, sem TAC (%)</label>
+              <input class="form-input" id="cfg_finMetaNoTAC" type="number" step="1" value="${(s.financing.withGoalWithoutTAC*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Com meta, com TAC (%)</label>
+              <input class="form-input" id="cfg_finMetaTAC" type="number" step="1" value="${(s.financing.withGoalWithTAC*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Valor TAC (R$)</label>
+              <input class="form-input" id="cfg_tacValue" type="number" value="${s.financing.tacValue}">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:24px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:16px;">Seguro Safra (R$)</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">Sem meta</label>
+              <input class="form-input" id="cfg_insNoMeta" type="number" value="${s.insurance.withoutGoal}">
+            </div>
+            <div>
+              <label class="form-label">Com meta</label>
+              <input class="form-input" id="cfg_insWithMeta" type="number" value="${s.insurance.withGoal}">
+            </div>
+          </div>
+
+          <h3 style="font-weight:700;color:#0f172a;margin:20px 0 4px;">Despachante (R$ por emplacamento)</h3>
+          <p style="font-size:.75rem;color:#64748b;margin-bottom:12px;">Valor pago ao vendedor por cada veículo emplacado</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">Sem meta</label>
+              <input class="form-input" id="cfg_despNoMeta" type="number" value="${s.despachante.withoutGoal}">
+            </div>
+            <div>
+              <label class="form-label">Com meta vendas</label>
+              <input class="form-input" id="cfg_despSalesMeta" type="number" value="${s.despachante.withSalesGoal}">
+            </div>
+            <div>
+              <label class="form-label">Meta vendas + emplacar</label>
+              <input class="form-input" id="cfg_despBothMeta" type="number" value="${s.despachante.withBothGoals}">
+            </div>
+            <div>
+              <label class="form-label">Meta emplacamento (%)</label>
+              <input class="form-input" id="cfg_despRegThreshold" type="number" step="1" value="${(s.despachante.registrationGoalThreshold*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Valor (Florianópolis)</label>
+              <input class="form-input" id="cfg_despFln" type="number" value="${s.despachante.valueFlorianopolis}">
+            </div>
+            <div>
+              <label class="form-label">Valor (Fora)</label>
+              <input class="form-input" id="cfg_despOut" type="number" value="${s.despachante.valueOutside}">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:24px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:16px;">Excedente (%)</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">Sem meta (%)</label>
+              <input class="form-input" id="cfg_excNoMeta" type="number" step="1" value="${(s.excedente.withoutGoal*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Com meta (%)</label>
+              <input class="form-input" id="cfg_excWithMeta" type="number" step="1" value="${(s.excedente.withGoal*100).toFixed(0)}">
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:24px;">
+          <h3 style="font-weight:700;color:#0f172a;margin-bottom:16px;">Consignado e Captação</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label class="form-label">Captação consignado (%)</label>
+              <input class="form-input" id="cfg_consCap" type="number" step="1" value="${(s.consigned.captationRate*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Serviços consignado (%)</label>
+              <input class="form-input" id="cfg_consServ" type="number" step="1" value="${(s.consigned.servicesRate*100).toFixed(0)}">
+            </div>
+            <div>
+              <label class="form-label">Captação estoque (min R$)</label>
+              <input class="form-input" id="cfg_stockCapMin" type="number" value="${s.stockPurchase.min}">
+            </div>
+            <div>
+              <label class="form-label">Captação estoque (max R$)</label>
+              <input class="form-input" id="cfg_stockCapMax" type="number" value="${s.stockPurchase.max}">
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div style="margin-top:20px;text-align:right;">
+        <button class="btn btn-secondary" style="margin-right:8px;" onclick="App.resetConfig()">Restaurar Padrão</button>
+        <button class="btn btn-primary" onclick="App.saveConfig()">Salvar Configurações</button>
+      </div>
+    `;
+  },
+
+  saveConfig() {
+    const g = id => parseFloat(document.getElementById(id).value) || 0;
+    const s = Store.getSettings();
+    s.vehicleCommission.belowMeta = g('cfg_belowMeta');
+    s.vehicleCommission.meta = g('cfg_meta');
+    s.vehicleCommission.metaThreshold = g('cfg_metaThreshold');
+    [7,8,9,10].forEach(n => { s.vehicleCommission.bonusRates[n] = g('cfg_bonus'+n) / 100; });
+    s.ipva.withoutGoal = g('cfg_ipvaNoMeta') / 100;
+    s.ipva.withGoal = g('cfg_ipvaWithMeta') / 100;
+    s.financing.rRates = {
+      R1: g('cfg_rR1') / 100,
+      R2: g('cfg_rR2') / 100,
+      R3: g('cfg_rR3') / 100,
+      R4: g('cfg_rR4') / 100
+    };
+    s.financing.taxDeduction = g('cfg_taxDed') / 100;
+    s.financing.withoutGoalWithoutTAC = g('cfg_finNoMetaNoTAC') / 100;
+    s.financing.withoutGoalWithTAC = g('cfg_finNoMetaTAC') / 100;
+    s.financing.withGoalWithoutTAC = g('cfg_finMetaNoTAC') / 100;
+    s.financing.withGoalWithTAC = g('cfg_finMetaTAC') / 100;
+    s.financing.tacValue = g('cfg_tacValue');
+    s.insurance.withoutGoal = g('cfg_insNoMeta');
+    s.insurance.withGoal = g('cfg_insWithMeta');
+    s.despachante.withoutGoal = g('cfg_despNoMeta');
+    s.despachante.withSalesGoal = g('cfg_despSalesMeta');
+    s.despachante.withBothGoals = g('cfg_despBothMeta');
+    s.despachante.registrationGoalThreshold = g('cfg_despRegThreshold') / 100;
+    s.despachante.valueFlorianopolis = g('cfg_despFln');
+    s.despachante.valueOutside = g('cfg_despOut');
+    s.excedente.withoutGoal = g('cfg_excNoMeta') / 100;
+    s.excedente.withGoal = g('cfg_excWithMeta') / 100;
+    s.consigned.captationRate = g('cfg_consCap') / 100;
+    s.consigned.servicesRate = g('cfg_consServ') / 100;
+    s.stockPurchase.min = g('cfg_stockCapMin');
+    s.stockPurchase.max = g('cfg_stockCapMax');
+    Store.saveSettings(s);
+    toast('Configurações salvas com sucesso!');
+  },
+
+  resetConfig() {
+    if (!confirm('Restaurar todas as configurações para o padrão?')) return;
+    Store.saveSettings(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)));
+    this.renderConfig();
+    toast('Configurações restauradas!');
+  },
+
+  // ============================================================
+  // USUÁRIOS
+  // ============================================================
+  renderUsuarios() {
+    if (this.currentUser.role !== 'admin') return;
+    const users = Store.getUsers();
+    let rows = users.map(u => `<tr>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-purple':'badge-blue'}">${u.role==='admin'?'Administrador':'Vendedor'}</span></td>
+      <td><span class="badge ${u.active?'badge-green':'badge-red'}">${u.active?'Ativo':'Inativo'}</span></td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick="App.openUserModal('${u.id}')" style="margin-right:4px;">Editar</button>
+        ${u.id !== this.currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="App.deleteUser('${u.id}')">Del</button>` : '<span style="font-size:.72rem;color:#94a3b8;">você</span>'}
+      </td>
+    </tr>`).join('');
+
+    document.getElementById('usuariosContent').innerHTML = `
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+        <button class="btn btn-primary" onclick="App.openUserModal()">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Novo Usuário
+        </button>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        <table>
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  },
+
+  // ============================================================
+  // MODAL: VENDA
+  // ============================================================
+  openSaleModal(saleId) {
+    const isAdmin = this.currentUser.role === 'admin';
+    const sale = saleId ? Store.getSaleById(saleId) : null;
+    const v = sale || {};
+    const sellers = Store.getUsers().filter(u => u.active);
+    const ctx = getContext(this.currentUser.role === 'admin' ? null : this.currentUser.id);
+
+    const sellerOptions = isAdmin ? `<div class="form-group">
+      <label class="form-label">Vendedor</label>
+      <select class="form-select" id="sf_seller">
+        ${sellers.map(u => `<option value="${u.id}" ${(v.sellerId||this.currentUser.id)===u.id?'selected':''}>${u.name}</option>`).join('')}
+      </select>
+    </div>` : '';
+
+    const fin = v.financing || {};
+    const ipvaC = v.ipvaClient || {};
+    const ipvaS = v.ipvaStock || {};
+    const exc = v.excedente || {};
+    const cons = v.consigned || {};
+    const stockCap = v.stockCaptation || {};
+
+    const previewComm = sale ? (() => {
+      const res = Calculator.calculate(sale, ctx);
+      return `<div class="alert alert-success" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Comissão calculada:</span>
+        <strong style="font-size:1.1rem;">${fmtR(res.total)}</strong>
+      </div>`;
+    })() : '';
+
+    showModal(`<div class="modal modal-lg">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+        <h2 style="font-size:1.2rem;font-weight:800;color:#0f172a;">${sale ? 'Editar Venda' : 'Nova Venda'}</h2>
+        <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.5rem;line-height:1;">&times;</button>
+      </div>
+      ${previewComm}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        ${sellerOptions}
+        <div>
+          <label class="form-label">Data da Venda</label>
+          <input class="form-input" id="sf_date" type="date" value="${v.date ? v.date.substr(0,10) : new Date().toISOString().substr(0,10)}">
+        </div>
+        <div>
+          <label class="form-label">Veículo (modelo)</label>
+          <input class="form-input" id="sf_vehicle" type="text" placeholder="Ex: Toyota Corolla 2022" value="${v.vehicle||''}">
+        </div>
+        <div>
+          <label class="form-label">Placa</label>
+          <input class="form-input" id="sf_plate" type="text" placeholder="ABC-1234" value="${v.plate||''}">
+        </div>
+        <div>
+          <label class="form-label">Tipo de Venda</label>
+          <select class="form-select" id="sf_type">
+            <option value="estoque" ${(v.type||'estoque')==='estoque'?'selected':''}>Estoque</option>
+            <option value="consignado" ${v.type==='consignado'?'selected':''}>Consignado</option>
+            <option value="repasse" ${v.type==='repasse'?'selected':''}>Repasse</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h4 style="font-weight:700;color:#374151;margin-bottom:4px;font-size:.875rem;">Financiamento</h4>
+      <div class="alert alert-info" style="margin-bottom:12px;font-size:.75rem;padding:8px 12px;">
+        <strong>Cálculo:</strong> Valor × alíquota R → desconta 25% impostos → × taxa (meta + TAC)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end;">
+        <div>
+          <label class="form-label">Valor total financiado (R$)</label>
+          <input class="form-input" id="sf_finValue" type="number" step="0.01" placeholder="0,00" value="${fin.value||''}">
+        </div>
+        <div>
+          <label class="form-label">Alíquota R</label>
+          <select class="form-select" id="sf_rTier">
+            <option value="">Sem financiamento</option>
+            <option value="R1" ${fin.rTier==='R1'?'selected':''}>R1 — 1,2%</option>
+            <option value="R2" ${fin.rTier==='R2'?'selected':''}>R2 — 2,4%</option>
+            <option value="R3" ${fin.rTier==='R3'?'selected':''}>R3 — 3,6%</option>
+            <option value="R4" ${fin.rTier==='R4'?'selected':''}>R4 — 4,8%</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:2px;">
+          <input class="form-checkbox" id="sf_hasTAC" type="checkbox" ${fin.hasTAC?'checked':''}>
+          <label for="sf_hasTAC" class="form-label" style="margin:0;cursor:pointer;">Inclui TAC (R$${fmt(ctx.settings.financing.tacValue)})</label>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h4 style="font-weight:700;color:#374151;margin-bottom:12px;font-size:.875rem;">IPVA</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;align-items:end;">
+        <div>
+          <label class="form-label">IPVA cliente (R$)</label>
+          <input class="form-input" id="sf_ipvaCValue" type="number" step="0.01" placeholder="0,00" value="${ipvaC.value||''}">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:2px;">
+          <input class="form-checkbox" id="sf_ipvaCEligible" type="checkbox" ${ipvaC.eligible?'checked':''}>
+          <label for="sf_ipvaCEligible" class="form-label" style="margin:0;cursor:pointer;">Bônus IPVA cliente</label>
+        </div>
+        <div>
+          <label class="form-label">IPVA estoque (R$)</label>
+          <input class="form-input" id="sf_ipvaSValue" type="number" step="0.01" placeholder="0,00" value="${ipvaS.value||''}">
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding-bottom:2px;">
+          <input class="form-checkbox" id="sf_ipvaSEligible" type="checkbox" ${ipvaS.eligible?'checked':''}>
+          <label for="sf_ipvaSEligible" class="form-label" style="margin:0;cursor:pointer;">Bônus IPVA estoque</label>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h4 style="font-weight:700;color:#374151;margin-bottom:12px;font-size:.875rem;">Outros</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:start;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <input class="form-checkbox" id="sf_hasInsurance" type="checkbox" ${v.hasInsurance?'checked':''}>
+            <label for="sf_hasInsurance" class="form-label" style="margin:0;cursor:pointer;">Seguro Safra</label>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <input class="form-checkbox" id="sf_hasDespachante" type="checkbox" ${v.hasDespachante?'checked':''}>
+            <label for="sf_hasDespachante" class="form-label" style="margin:0;cursor:pointer;">Despachante</label>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input class="form-checkbox" id="sf_isPlated" type="checkbox" ${v.isPlated?'checked':''}>
+            <label for="sf_isPlated" class="form-label" style="margin:0;cursor:pointer;">Emplacado</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h4 style="font-weight:700;color:#374151;margin-bottom:12px;font-size:.875rem;">Excedente / Lucro</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <label class="form-label">Valor do excedente (R$)</label>
+          <input class="form-input" id="sf_excValue" type="number" step="0.01" placeholder="0,00" value="${exc.value||''}">
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <h4 style="font-weight:700;color:#374151;margin-bottom:12px;font-size:.875rem;">Consignado / Captação</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+        <div>
+          <label class="form-label">Lucro captação consignado (R$)</label>
+          <input class="form-input" id="sf_consCap" type="number" step="0.01" placeholder="0,00" value="${cons.captationProfit||''}">
+        </div>
+        <div>
+          <label class="form-label">Lucro serviços consignado (R$)</label>
+          <input class="form-input" id="sf_consServ" type="number" step="0.01" placeholder="0,00" value="${cons.servicesProfit||''}">
+        </div>
+        <div>
+          <label class="form-label">Bônus captação estoque (R$)</label>
+          <input class="form-input" id="sf_stockCap" type="number" step="0.01" placeholder="500–1000" value="${stockCap.value||''}">
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div>
+        <label class="form-label">Observações</label>
+        <textarea class="form-input" id="sf_notes" rows="2" placeholder="Notas adicionais...">${v.notes||''}</textarea>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px;">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="App.saveSale('${saleId||''}')">
+          ${sale ? 'Salvar Alterações' : 'Registrar Venda'}
+        </button>
+      </div>
+    </div>`);
+  },
+
+  saveSale(saleId) {
+    const isAdmin = this.currentUser.role === 'admin';
+    const sellerId = isAdmin ? document.getElementById('sf_seller').value : this.currentUser.id;
+    const g = id => parseFloat(document.getElementById(id).value) || 0;
+    const c = id => document.getElementById(id).checked;
+    const t = id => document.getElementById(id).value;
+
+    const sale = {
+      id: saleId || uid(),
+      sellerId,
+      date: t('sf_date') || new Date().toISOString().substr(0,10),
+      vehicle: t('sf_vehicle'),
+      plate: t('sf_plate'),
+      type: t('sf_type'),
+      financing: { value: g('sf_finValue'), rTier: document.getElementById('sf_rTier').value, hasTAC: c('sf_hasTAC') },
+      ipvaClient: { value: g('sf_ipvaCValue'), eligible: c('sf_ipvaCEligible') },
+      ipvaStock: { value: g('sf_ipvaSValue'), eligible: c('sf_ipvaSEligible') },
+      hasInsurance: c('sf_hasInsurance'),
+      hasDespachante: c('sf_hasDespachante'),
+      isPlated: c('sf_isPlated'),
+      excedente: { value: g('sf_excValue') },
+      consigned: { captationProfit: g('sf_consCap'), servicesProfit: g('sf_consServ') },
+      stockCaptation: { value: g('sf_stockCap') },
+      notes: t('sf_notes')
+    };
+
+    Store.saveSale(sale);
+    closeModal();
+    toast(saleId ? 'Venda atualizada!' : 'Venda registrada!');
+    this.navigate(this.currentPage);
+  },
+
+  deleteSale(id) {
+    if (!confirm('Excluir esta venda?')) return;
+    Store.deleteSale(id);
+    toast('Venda excluída.', 'info');
+    this.navigate(this.currentPage);
+  },
+
+  // ============================================================
+  // MODAL: ESTOQUE
+  // ============================================================
+  openStockModal(stockId) {
+    const item = stockId ? Store.getStockById(stockId) : null;
+    const v = item || {};
+    showModal(`<div class="modal modal-sm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.1rem;font-weight:800;color:#0f172a;">${item ? 'Editar Veículo' : 'Adicionar ao Estoque'}</h2>
+        <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.5rem;line-height:1;">&times;</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <label class="form-label">Placa</label>
+          <input class="form-input" id="stk_plate" type="text" placeholder="ABC-1234" value="${v.plate||''}">
+        </div>
+        <div>
+          <label class="form-label">Modelo</label>
+          <input class="form-input" id="stk_model" type="text" placeholder="Toyota Corolla" value="${v.model||''}">
+        </div>
+        <div>
+          <label class="form-label">Ano</label>
+          <input class="form-input" id="stk_year" type="number" placeholder="2022" value="${v.year||''}">
+        </div>
+        <div>
+          <label class="form-label">Cor</label>
+          <input class="form-input" id="stk_color" type="text" placeholder="Prata" value="${v.color||''}">
+        </div>
+        <div>
+          <label class="form-label">Data de Entrada</label>
+          <input class="form-input" id="stk_entryDate" type="date" value="${v.entryDate ? v.entryDate.substr(0,10) : new Date().toISOString().substr(0,10)}">
+        </div>
+        <div>
+          <label class="form-label">Status</label>
+          <select class="form-select" id="stk_status">
+            <option value="available" ${(v.status||'available')==='available'?'selected':''}>Disponível</option>
+            <option value="reserved" ${v.status==='reserved'?'selected':''}>Reservado</option>
+            <option value="sold" ${v.status==='sold'?'selected':''}>Vendido</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <label class="form-label">Observações</label>
+        <input class="form-input" id="stk_notes" type="text" placeholder="Notas..." value="${v.notes||''}">
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="App.saveStock('${stockId||''}')">Salvar</button>
+      </div>
+    </div>`);
+  },
+
+  saveStock(stockId) {
+    const t = id => document.getElementById(id).value;
+    const item = {
+      id: stockId || uid(),
+      plate: t('stk_plate'),
+      model: t('stk_model'),
+      year: parseInt(t('stk_year')) || null,
+      color: t('stk_color'),
+      entryDate: t('stk_entryDate'),
+      status: t('stk_status'),
+      notes: t('stk_notes')
+    };
+    Store.saveStock(item);
+    closeModal();
+    toast(stockId ? 'Veículo atualizado!' : 'Veículo adicionado ao estoque!');
+    this.navigate(this.currentPage);
+  },
+
+  deleteStock(id) {
+    if (!confirm('Remover este veículo do estoque?')) return;
+    Store.deleteStock(id);
+    toast('Veículo removido.', 'info');
+    this.navigate(this.currentPage);
+  },
+
+  // ============================================================
+  // MODAL: USUÁRIO
+  // ============================================================
+  openUserModal(userId) {
+    const user = userId ? Store.getUserById(userId) : null;
+    const v = user || {};
+    showModal(`<div class="modal modal-sm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h2 style="font-size:1.1rem;font-weight:800;color:#0f172a;">${user ? 'Editar Usuário' : 'Novo Usuário'}</h2>
+        <button onclick="closeModal()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.5rem;line-height:1;">&times;</button>
+      </div>
+      <div style="display:grid;gap:14px;">
+        <div>
+          <label class="form-label">Nome completo</label>
+          <input class="form-input" id="uf_name" type="text" placeholder="Nome do vendedor" value="${v.name||''}">
+        </div>
+        <div>
+          <label class="form-label">E-mail</label>
+          <input class="form-input" id="uf_email" type="email" placeholder="email@exemplo.com" value="${v.email||''}">
+        </div>
+        <div>
+          <label class="form-label">${user ? 'Nova senha (deixe vazio para manter)' : 'Senha'}</label>
+          <input class="form-input" id="uf_password" type="password" placeholder="••••••••">
+        </div>
+        <div>
+          <label class="form-label">Perfil</label>
+          <select class="form-select" id="uf_role">
+            <option value="seller" ${(v.role||'seller')==='seller'?'selected':''}>Vendedor</option>
+            <option value="admin" ${v.role==='admin'?'selected':''}>Administrador</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input class="form-checkbox" id="uf_active" type="checkbox" ${(v.active !== false)?'checked':''}>
+          <label for="uf_active" class="form-label" style="margin:0;cursor:pointer;">Usuário ativo</label>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="App.saveUser('${userId||''}')">Salvar</button>
+      </div>
+    </div>`);
+  },
+
+  saveUser(userId) {
+    const t = id => document.getElementById(id).value;
+    const c = id => document.getElementById(id).checked;
+    const existing = userId ? Store.getUserById(userId) : null;
+    const password = t('uf_password');
+    if (!userId && !password) { toast('Informe uma senha para o novo usuário.', 'error'); return; }
+    const email = t('uf_email');
+    const duplicate = Store.getUsers().find(u => u.email === email && u.id !== userId);
+    if (duplicate) { toast('Já existe um usuário com este e-mail.', 'error'); return; }
+    const user = {
+      id: userId || uid(),
+      name: t('uf_name'),
+      email,
+      password: password || (existing ? existing.password : ''),
+      role: t('uf_role'),
+      active: c('uf_active'),
+      createdAt: existing ? existing.createdAt : new Date().toISOString()
+    };
+    Store.saveUser(user);
+    closeModal();
+    toast(userId ? 'Usuário atualizado!' : 'Usuário criado!');
+    this.renderUsuarios();
+  },
+
+  deleteUser(id) {
+    if (id === this.currentUser.id) { toast('Não é possível excluir seu próprio usuário.', 'error'); return; }
+    if (!confirm('Excluir este usuário permanentemente?')) return;
+    Store.deleteUser(id);
+    toast('Usuário excluído.', 'info');
+    this.renderUsuarios();
+  }
+};
+
+// Init
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>
