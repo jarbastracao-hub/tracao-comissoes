@@ -75,6 +75,82 @@
     .sidebar { display: none !important; }
     #main { margin-left: 0 !important; }
   }
+
+  /* ===== MOBILE RESPONSIVE ===== */
+  #sidebarOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 9; }
+  #sidebarOverlay.open { display: block; }
+  #mobileMenuBtn { display: none; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; background: #f1f5f9; border: none; cursor: pointer; flex-shrink: 0; }
+  #mobileMenuBtn:hover { background: #e2e8f0; }
+
+  @media (max-width: 768px) {
+    /* Sidebar vira gaveta deslizante */
+    .sidebar {
+      transform: translateX(-100%);
+      transition: transform .25s cubic-bezier(.4,0,.2,1);
+      position: fixed !important;
+      z-index: 10;
+    }
+    .sidebar.mobile-open { transform: translateX(0) !important; }
+
+    /* Conteúdo principal ocupa tela toda */
+    #main { margin-left: 0 !important; }
+    #appPage { display: block !important; }
+
+    /* Botão hambúrguer visível */
+    #mobileMenuBtn { display: flex !important; }
+
+    /* Header mais compacto */
+    header { padding: 10px 14px !important; }
+    #pageSubtitle { display: none; }
+    #pageTitle { font-size: .95rem !important; }
+    #headerDate { display: none; }
+
+    /* Padding do conteúdo reduzido */
+    #main > div[style] { padding: 14px !important; }
+
+    /* Login mais compacto */
+    .login-card { padding: 28px 20px !important; margin: 16px; }
+
+    /* Cards com scroll horizontal para tabelas */
+    .card { overflow-x: auto; }
+
+    /* Grids 2 colunas → 1 coluna */
+    div[style*="grid-template-columns:1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Grids 3 colunas → 1 coluna */
+    div[style*="grid-template-columns:1fr 1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Grids 4 colunas → 2 colunas */
+    div[style*="grid-template-columns:1fr 1fr 1fr 1fr"],
+    div[style*="grid-template-columns: 1fr 1fr 1fr 1fr"] {
+      grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* Grid de 5 colunas (tabela de bônus) → 3 colunas */
+    div[style*="grid-template-columns:repeat(5"] {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* Modal ocupa tela inteira na base */
+    .modal-backdrop { padding: 0 !important; align-items: flex-end !important; }
+    .modal { border-radius: 16px 16px 0 0 !important; max-height: 93vh; width: 100% !important; }
+
+    /* Tabelas com scroll interno */
+    table { min-width: 480px; }
+
+    /* Botões menores no mobile */
+    .btn { font-size: .8rem; padding: 7px 12px; }
+    .btn-sm { font-size: .75rem; padding: 4px 8px; }
+
+    /* Hint de credenciais no login */
+    .login-hint { font-size: .72rem !important; }
+  }
 </style>
 </head>
 <body class="bg-slate-50">
@@ -99,15 +175,14 @@
       <input id="loginPassword" type="password" class="form-input" placeholder="••••••••">
     </div>
     <button class="btn btn-primary w-full" style="width:100%;justify-content:center;padding:11px;" onclick="App.login()">Entrar</button>
-    <div style="margin-top:20px;padding:12px;background:#f8fafc;border-radius:10px;font-size:.78rem;color:#64748b;">
-      <strong>Acesso Admin:</strong> admin@tracao.com / admin123<br>
-      <strong>Vendedor Demo:</strong> vendedor@tracao.com / vendedor123
-    </div>
   </div>
 </div>
 
 <!-- ==================== MAIN APP ==================== -->
 <div id="appPage" class="hidden" style="display:flex;min-height:100vh;">
+
+  <!-- Mobile overlay -->
+  <div id="sidebarOverlay" onclick="App.closeSidebar()"></div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar no-print" style="position:fixed;left:0;top:0;bottom:0;overflow-y:auto;z-index:10;">
@@ -172,9 +247,16 @@
 
     <!-- Top Header -->
     <header class="no-print" style="background:white;border-bottom:1px solid #e2e8f0;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;">
-      <div>
-        <h2 id="pageTitle" style="font-size:1.1rem;font-weight:700;color:#0f172a;"></h2>
-        <p id="pageSubtitle" style="font-size:.78rem;color:#64748b;margin-top:1px;"></p>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button id="mobileMenuBtn" onclick="App.openSidebar()" title="Menu">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="#374151" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+        <div>
+          <h2 id="pageTitle" style="font-size:1.1rem;font-weight:700;color:#0f172a;"></h2>
+          <p id="pageSubtitle" style="font-size:.78rem;color:#64748b;margin-top:1px;"></p>
+        </div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
         <div id="metaBadge" class="meta-badge"></div>
@@ -595,8 +677,19 @@ const App = {
     this.navigate('dashboard');
   },
 
+  openSidebar() {
+    document.querySelector('.sidebar').classList.add('mobile-open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+  },
+
+  closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('mobile-open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  },
+
   navigate(page) {
     this.currentPage = page;
+    this.closeSidebar();
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     const pageEl = document.getElementById('page-' + page);
