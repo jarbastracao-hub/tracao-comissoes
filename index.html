@@ -76,6 +76,8 @@
     #main { margin-left: 0 !important; }
   }
 
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
   /* ===== MOBILE RESPONSIVE ===== */
   #sidebarOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 9; }
   #sidebarOverlay.open { display: block; }
@@ -258,9 +260,12 @@
           <p id="pageSubtitle" style="font-size:.78rem;color:#64748b;margin-top:1px;"></p>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;">
+      <div style="display:flex;align-items:center;gap:8px;">
         <div id="metaBadge" class="meta-badge"></div>
         <div style="font-size:.78rem;color:#94a3b8;" id="headerDate"></div>
+        <button id="syncBtn" class="btn btn-secondary btn-sm" onclick="App.syncFromCloud()" title="Atualizar dados da nuvem" style="padding:5px 8px;">
+          <svg id="syncIcon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
       </div>
     </header>
 
@@ -352,16 +357,32 @@ const DEFAULT_USERS = [
 ];
 
 // ============================================================
-// STORE
+// STORE (Cloud-synced via JSONBlob)
 // ============================================================
+const CLOUD_ID = '019ed8f4-d778-7203-b0d6-443882390539';
+const CLOUD_URL = 'https://jsonblob.com/api/jsonBlob/' + CLOUD_ID;
+
 const Store = {
   KEY: 'tracaoVeiculos2026',
   data: null,
+  syncing: false,
 
-  init() {
-    const saved = localStorage.getItem(this.KEY);
-    if (saved) {
-      try { this.data = JSON.parse(saved); } catch(e) { this.data = null; }
+  async init() {
+    const local = localStorage.getItem(this.KEY);
+    if (local) {
+      try { this.data = JSON.parse(local); } catch(e) { this.data = null; }
+    }
+    try {
+      const r = await fetch(CLOUD_URL);
+      if (r.ok) {
+        const cloud = await r.json();
+        if (cloud && cloud.initialized) {
+          this.data = cloud;
+          this.saveLocal();
+        }
+      }
+    } catch(e) {
+      console.warn('Cloud sync failed, using local data:', e);
     }
     if (!this.data || !this.data.initialized) {
       this.data = {
@@ -371,12 +392,50 @@ const Store = {
         stock: [],
         settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
       };
-      this.save();
+      this.saveLocal();
+      this.pushToCloud();
     }
   },
 
-  save() {
+  saveLocal() {
     localStorage.setItem(this.KEY, JSON.stringify(this.data));
+  },
+
+  save() {
+    this.saveLocal();
+    this.pushToCloud();
+  },
+
+  async pushToCloud() {
+    if (this.syncing) return;
+    this.syncing = true;
+    try {
+      await fetch(CLOUD_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.data)
+      });
+    } catch(e) {
+      console.warn('Cloud push failed:', e);
+    }
+    this.syncing = false;
+  },
+
+  async pullFromCloud() {
+    try {
+      const r = await fetch(CLOUD_URL);
+      if (r.ok) {
+        const cloud = await r.json();
+        if (cloud && cloud.initialized) {
+          this.data = cloud;
+          this.saveLocal();
+          return true;
+        }
+      }
+    } catch(e) {
+      console.warn('Cloud pull failed:', e);
+    }
+    return false;
   },
 
   // Users
@@ -620,8 +679,8 @@ const App = {
   currentUser: null,
   currentPage: 'dashboard',
 
-  init() {
-    Store.init();
+  async init() {
+    await Store.init();
     const saved = sessionStorage.getItem('tracaoUser');
     if (saved) {
       try {
@@ -685,6 +744,19 @@ const App = {
   closeSidebar() {
     document.querySelector('.sidebar').classList.remove('mobile-open');
     document.getElementById('sidebarOverlay').classList.remove('open');
+  },
+
+  async syncFromCloud() {
+    const icon = document.getElementById('syncIcon');
+    if (icon) icon.style.animation = 'spin 1s linear infinite';
+    const ok = await Store.pullFromCloud();
+    if (icon) icon.style.animation = '';
+    if (ok) {
+      this.navigate(this.currentPage);
+      toast('Dados atualizados da nuvem!', 'success');
+    } else {
+      toast('Falha ao conectar com a nuvem.', 'error');
+    }
   },
 
   navigate(page) {
@@ -922,13 +994,17 @@ const App = {
   // ============================================================
   // DASHBOARD
   // ============================================================
-  renderDashboard() {
+  async renderDashboard() {
     const u = this.currentUser;
     const now = new Date();
     const isAdmin = u.role === 'admin';
     const sellerId = isAdmin ? null : u.id;
 
-    if (isAdmin) { this.renderDashboardAdmin(); return; }
+    if (isAdmin) {
+      await Store.pullFromCloud();
+      this.renderDashboardAdmin();
+      return;
+    }
     const ctx = getContext(sellerId);
     const { stockCount, settings } = ctx;
     const metaThreshold = settings.vehicleCommission.metaThreshold || 6;
