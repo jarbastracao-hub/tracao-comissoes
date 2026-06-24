@@ -263,8 +263,9 @@
       <div style="display:flex;align-items:center;gap:8px;">
         <div id="metaBadge" class="meta-badge"></div>
         <div style="font-size:.78rem;color:#94a3b8;" id="headerDate"></div>
-        <button id="syncBtn" class="btn btn-secondary btn-sm" onclick="App.syncFromCloud()" title="Atualizar dados da nuvem" style="padding:5px 8px;">
+        <button id="syncBtn" class="btn btn-secondary btn-sm" onclick="App.syncFromCloud()" title="Sincronizar dados da nuvem" style="padding:5px 8px;position:relative;">
           <svg id="syncIcon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span id="syncDot" style="position:absolute;top:2px;right:2px;width:7px;height:7px;border-radius:50%;background:#94a3b8;"></span>
         </button>
       </div>
     </header>
@@ -359,41 +360,45 @@ const DEFAULT_USERS = [
 // ============================================================
 // STORE (Cloud-synced via JSONBlob)
 // ============================================================
-const CLOUD_ID = '019ed8f4-d778-7203-b0d6-443882390539';
+const CLOUD_ID = '019ef9b0-d9d0-74ad-949d-9c3ad11f1365';
 const CLOUD_URL = 'https://jsonblob.com/api/jsonBlob/' + CLOUD_ID;
 
 const Store = {
   KEY: 'tracaoVeiculos2026',
   data: null,
   syncing: false,
+  cloudOk: false,
 
   async init() {
-    const local = localStorage.getItem(this.KEY);
-    if (local) {
-      try { this.data = JSON.parse(local); } catch(e) { this.data = null; }
-    }
+    let cloudData = null;
     try {
-      const r = await fetch(CLOUD_URL);
+      const r = await fetch(CLOUD_URL, { cache: 'no-store' });
       if (r.ok) {
-        const cloud = await r.json();
-        if (cloud && cloud.initialized) {
-          this.data = cloud;
-          this.saveLocal();
-        }
+        const json = await r.json();
+        if (json && json.initialized) { cloudData = json; this.cloudOk = true; }
       }
     } catch(e) {
-      console.warn('Cloud sync failed, using local data:', e);
+      console.warn('Cloud fetch failed:', e);
     }
-    if (!this.data || !this.data.initialized) {
-      this.data = {
-        initialized: true,
-        users: DEFAULT_USERS,
-        sales: [],
-        stock: [],
-        settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
-      };
+
+    if (cloudData) {
+      this.data = cloudData;
       this.saveLocal();
-      this.pushToCloud();
+    } else {
+      const local = localStorage.getItem(this.KEY);
+      if (local) {
+        try { this.data = JSON.parse(local); } catch(e) { this.data = null; }
+      }
+      if (!this.data || !this.data.initialized) {
+        this.data = {
+          initialized: true,
+          users: DEFAULT_USERS,
+          sales: [],
+          stock: [],
+          settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS))
+        };
+        this.saveLocal();
+      }
     }
   },
 
@@ -410,32 +415,61 @@ const Store = {
     if (this.syncing) return;
     this.syncing = true;
     try {
-      await fetch(CLOUD_URL, {
+      const r = await fetch(CLOUD_URL, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(this.data)
       });
+      this.cloudOk = r.ok;
     } catch(e) {
       console.warn('Cloud push failed:', e);
+      this.cloudOk = false;
     }
     this.syncing = false;
   },
 
   async pullFromCloud() {
     try {
-      const r = await fetch(CLOUD_URL);
+      const r = await fetch(CLOUD_URL, { cache: 'no-store' });
       if (r.ok) {
         const cloud = await r.json();
         if (cloud && cloud.initialized) {
           this.data = cloud;
           this.saveLocal();
+          this.cloudOk = true;
           return true;
         }
       }
     } catch(e) {
       console.warn('Cloud pull failed:', e);
+      this.cloudOk = false;
     }
     return false;
+  },
+
+  async mergeAndPush() {
+    try {
+      const r = await fetch(CLOUD_URL, { cache: 'no-store' });
+      if (!r.ok) return;
+      const cloud = await r.json();
+      if (!cloud || !cloud.initialized) return;
+      const localSales = this.data.sales || [];
+      const cloudSales = cloud.sales || [];
+      const allIds = new Set([...localSales.map(s => s.id), ...cloudSales.map(s => s.id)]);
+      const merged = [];
+      allIds.forEach(id => {
+        const l = localSales.find(s => s.id === id);
+        const c = cloudSales.find(s => s.id === id);
+        merged.push(l && c ? (new Date(l.updatedAt||0) > new Date(c.updatedAt||0) ? l : c) : (l || c));
+      });
+      this.data.sales = merged;
+      this.data.users = cloud.users.length >= this.data.users.length ? cloud.users : this.data.users;
+      this.data.stock = cloud.stock.length >= this.data.stock.length ? cloud.stock : this.data.stock;
+      this.saveLocal();
+      await this.pushToCloud();
+    } catch(e) {
+      console.warn('Merge failed:', e);
+    }
   },
 
   // Users
@@ -733,6 +767,7 @@ const App = {
       document.getElementById('nav-usuarios').classList.remove('hidden');
     }
     document.getElementById('headerDate').textContent = new Date().toLocaleDateString('pt-BR', {weekday:'long',day:'numeric',month:'long'});
+    this.updateSyncIndicator();
     this.navigate('dashboard');
   },
 
@@ -748,15 +783,23 @@ const App = {
 
   async syncFromCloud() {
     const icon = document.getElementById('syncIcon');
+    const dot = document.getElementById('syncDot');
     if (icon) icon.style.animation = 'spin 1s linear infinite';
-    const ok = await Store.pullFromCloud();
+    await Store.mergeAndPush();
     if (icon) icon.style.animation = '';
-    if (ok) {
+    if (Store.cloudOk) {
+      if (dot) dot.style.background = '#22c55e';
       this.navigate(this.currentPage);
-      toast('Dados atualizados da nuvem!', 'success');
+      toast('Dados sincronizados com a nuvem!', 'success');
     } else {
+      if (dot) dot.style.background = '#ef4444';
       toast('Falha ao conectar com a nuvem.', 'error');
     }
+  },
+
+  updateSyncIndicator() {
+    const dot = document.getElementById('syncDot');
+    if (dot) dot.style.background = Store.cloudOk ? '#22c55e' : '#ef4444';
   },
 
   navigate(page) {
