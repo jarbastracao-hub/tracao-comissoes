@@ -1,0 +1,22 @@
+{
+  "initialized": true,
+  "users": [
+    { "id": "u1", "name": "Patrick (Admin)", "email": "patrickcostabr@gmail.com", "password": "Tracao@2026", "role": "admin", "active": true, "createdAt": "2026-06-10T00:00:00.000Z" },
+    { "id": "u2", "name": "Pablo Vinícius", "email": "paabloviinicius@gmail.com", "password": "Tracao@2026", "role": "seller", "active": true, "createdAt": "2026-06-10T00:00:00.000Z" },
+    { "id": "u3", "name": "Victor", "email": "victordasf@gmail.com", "password": "Tracao@2026", "role": "seller", "active": true, "createdAt": "2026-06-10T00:00:00.000Z" },
+    { "id": "u4", "name": "Vandeco Castro", "email": "decastro.vanderlei@gmail.com", "password": "Tracao@2026", "role": "seller", "active": true, "createdAt": "2026-06-10T00:00:00.000Z" },
+    { "id": "u5", "name": "Rodrigo Teixeira", "email": "rmarquesttt@gmail.com", "password": "Tracao@2026", "role": "seller", "active": true, "createdAt": "2026-06-10T00:00:00.000Z" }
+  ],
+  "sales": [],
+  "stock": [],
+  "settings": {
+    "vehicleCommission": { "belowMeta": 800, "meta": 1000, "bonusRates": { "7": 0.10, "8": 0.15, "9": 0.20, "10": 0.25 }, "metaThreshold": 6 },
+    "ipva": { "withoutGoal": 0.25, "withGoal": 0.50 },
+    "financing": { "rRates": { "R1": 0.012, "R2": 0.024, "R3": 0.036, "R4": 0.048 }, "taxDeduction": 0.25, "withoutGoalWithoutTAC": 0.10, "withoutGoalWithTAC": 0.15, "withGoalWithoutTAC": 0.20, "withGoalWithTAC": 0.40, "tacValue": 1000 },
+    "insurance": { "withoutGoal": 100, "withGoal": 250 },
+    "despachante": { "withoutGoal": 50, "withSalesGoal": 100, "withBothGoals": 150, "registrationGoalThreshold": 0.70, "valueFlorianopolis": 890, "valueOutside": 990 },
+    "excedente": { "withoutGoal": 0.25, "withGoal": 0.50 },
+    "consigned": { "captationRate": 0.10, "servicesRate": 0.40 },
+    "stockPurchase": { "min": 500, "max": 1000 }
+  }
+}
