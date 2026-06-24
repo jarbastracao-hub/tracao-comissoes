@@ -358,31 +358,23 @@ const DEFAULT_USERS = [
 ];
 
 // ============================================================
-// STORE (Cloud-synced via GitHub API)
+// STORE (Cloud-synced via Google Apps Script)
 // ============================================================
-const GH_TOKEN = atob('Z2l0aHViX3BhdF8xMUNEMldQU0kwYzJLdXpDcG1SSU42XzRqSDFUNUUwTW91V1U5QW5DYVdRb3dFZExuY0IwdFpUQjdHNm9NM0puNWIyNVRYTDNQUFZGUXdUVjNs');
-const GH_REPO = 'jarbastracao-hub/tracao-comissoes';
-const GH_FILE = 'data.json';
-const GH_API = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
-const GH_HEADERS = { 'Authorization': `Bearer ${GH_TOKEN}`, 'Accept': 'application/vnd.github+json' };
+const CLOUD_URL = 'https://script.google.com/macros/s/AKfycbw_uI_iLZR2tla2AjfbNHN5nyfgdMIa0zarUHjbYMARBuoWt9DAfXZ4VgzO34RSOxmE/exec';
 
 const Store = {
   KEY: 'tracaoVeiculos2026',
   data: null,
   syncing: false,
   cloudOk: false,
-  fileSha: null,
 
   async init() {
     let cloudData = null;
     try {
-      const r = await fetch(GH_API, { headers: GH_HEADERS, cache: 'no-store' });
+      const r = await fetch(CLOUD_URL);
       if (r.ok) {
         const json = await r.json();
-        this.fileSha = json.sha;
-        const decoded = atob(json.content.replace(/\n/g, ''));
-        const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0))));
-        if (parsed && parsed.initialized) { cloudData = parsed; this.cloudOk = true; }
+        if (json && json.initialized) { cloudData = json; this.cloudOk = true; }
       }
     } catch(e) {
       console.warn('Cloud fetch failed:', e);
@@ -422,23 +414,12 @@ const Store = {
     if (this.syncing) return;
     this.syncing = true;
     try {
-      if (!this.fileSha) {
-        const r = await fetch(GH_API, { headers: GH_HEADERS, cache: 'no-store' });
-        if (r.ok) { this.fileSha = (await r.json()).sha; }
-      }
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(this.data, null, 2))));
-      const r = await fetch(GH_API, {
-        method: 'PUT',
-        headers: { ...GH_HEADERS, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'sync', content, sha: this.fileSha })
+      const r = await fetch(CLOUD_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(this.data)
       });
-      if (r.ok) {
-        const res = await r.json();
-        this.fileSha = res.content.sha;
-        this.cloudOk = true;
-      } else {
-        this.cloudOk = false;
-      }
+      this.cloudOk = r.ok;
     } catch(e) {
       console.warn('Cloud push failed:', e);
       this.cloudOk = false;
@@ -448,14 +429,11 @@ const Store = {
 
   async pullFromCloud() {
     try {
-      const r = await fetch(GH_API, { headers: GH_HEADERS, cache: 'no-store' });
+      const r = await fetch(CLOUD_URL);
       if (r.ok) {
         const json = await r.json();
-        this.fileSha = json.sha;
-        const decoded = atob(json.content.replace(/\n/g, ''));
-        const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0))));
-        if (parsed && parsed.initialized) {
-          this.data = parsed;
+        if (json && json.initialized) {
+          this.data = json;
           this.saveLocal();
           this.cloudOk = true;
           return true;
