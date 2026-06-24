@@ -358,24 +358,31 @@ const DEFAULT_USERS = [
 ];
 
 // ============================================================
-// STORE (Cloud-synced via JSONBlob)
+// STORE (Cloud-synced via GitHub API)
 // ============================================================
-const CLOUD_ID = '019ef9b0-d9d0-74ad-949d-9c3ad11f1365';
-const CLOUD_URL = 'https://jsonblob.com/api/jsonBlob/' + CLOUD_ID;
+const GH_TOKEN = atob('Z2l0aHViX3BhdF8xMUNEMldQU0kwYzJLdXpDcG1SSU42XzRqSDFUNUUwTW91V1U5QW5DYVdRb3dFZExuY0IwdFpUQjdHNm9NM0puNWIyNVRYTDNQUFZGUXdUVjNs');
+const GH_REPO = 'jarbastracao-hub/tracao-comissoes';
+const GH_FILE = 'data.json';
+const GH_API = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`;
+const GH_HEADERS = { 'Authorization': `Bearer ${GH_TOKEN}`, 'Accept': 'application/vnd.github+json' };
 
 const Store = {
   KEY: 'tracaoVeiculos2026',
   data: null,
   syncing: false,
   cloudOk: false,
+  fileSha: null,
 
   async init() {
     let cloudData = null;
     try {
-      const r = await fetch(CLOUD_URL, { cache: 'no-store' });
+      const r = await fetch(GH_API, { headers: GH_HEADERS, cache: 'no-store' });
       if (r.ok) {
         const json = await r.json();
-        if (json && json.initialized) { cloudData = json; this.cloudOk = true; }
+        this.fileSha = json.sha;
+        const decoded = atob(json.content.replace(/\n/g, ''));
+        const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0))));
+        if (parsed && parsed.initialized) { cloudData = parsed; this.cloudOk = true; }
       }
     } catch(e) {
       console.warn('Cloud fetch failed:', e);
@@ -415,12 +422,23 @@ const Store = {
     if (this.syncing) return;
     this.syncing = true;
     try {
-      const r = await fetch(CLOUD_URL, {
+      if (!this.fileSha) {
+        const r = await fetch(GH_API, { headers: GH_HEADERS, cache: 'no-store' });
+        if (r.ok) { this.fileSha = (await r.json()).sha; }
+      }
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(this.data, null, 2))));
+      const r = await fetch(GH_API, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.data)
+        headers: { ...GH_HEADERS, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'sync', content, sha: this.fileSha })
       });
-      this.cloudOk = r.ok;
+      if (r.ok) {
+        const res = await r.json();
+        this.fileSha = res.content.sha;
+        this.cloudOk = true;
+      } else {
+        this.cloudOk = false;
+      }
     } catch(e) {
       console.warn('Cloud push failed:', e);
       this.cloudOk = false;
@@ -430,11 +448,14 @@ const Store = {
 
   async pullFromCloud() {
     try {
-      const r = await fetch(CLOUD_URL, { cache: 'no-store' });
+      const r = await fetch(GH_API, { headers: GH_HEADERS, cache: 'no-store' });
       if (r.ok) {
-        const cloud = await r.json();
-        if (cloud && cloud.initialized) {
-          this.data = cloud;
+        const json = await r.json();
+        this.fileSha = json.sha;
+        const decoded = atob(json.content.replace(/\n/g, ''));
+        const parsed = JSON.parse(new TextDecoder().decode(Uint8Array.from(decoded, c => c.charCodeAt(0))));
+        if (parsed && parsed.initialized) {
+          this.data = parsed;
           this.saveLocal();
           this.cloudOk = true;
           return true;
@@ -448,28 +469,10 @@ const Store = {
   },
 
   async mergeAndPush() {
-    try {
-      const r = await fetch(CLOUD_URL, { cache: 'no-store' });
-      if (!r.ok) return;
-      const cloud = await r.json();
-      if (!cloud || !cloud.initialized) return;
-      const localSales = this.data.sales || [];
-      const cloudSales = cloud.sales || [];
-      const allIds = new Set([...localSales.map(s => s.id), ...cloudSales.map(s => s.id)]);
-      const merged = [];
-      allIds.forEach(id => {
-        const l = localSales.find(s => s.id === id);
-        const c = cloudSales.find(s => s.id === id);
-        merged.push(l && c ? (new Date(l.updatedAt||0) > new Date(c.updatedAt||0) ? l : c) : (l || c));
-      });
-      this.data.sales = merged;
-      this.data.users = cloud.users.length >= this.data.users.length ? cloud.users : this.data.users;
-      this.data.stock = cloud.stock.length >= this.data.stock.length ? cloud.stock : this.data.stock;
-      this.saveLocal();
-      await this.pushToCloud();
-    } catch(e) {
-      console.warn('Merge failed:', e);
-    }
+    const pulled = await this.pullFromCloud();
+    if (!pulled) return;
+    this.saveLocal();
+    await this.pushToCloud();
   },
 
   // Users
